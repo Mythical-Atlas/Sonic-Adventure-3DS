@@ -1,0 +1,39 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build and run",
+            "type": "shell",
+            "command": "make\nStart-Process \"C:\\Citra\\nightly-mingw\\citra.exe\" sonic_adventure_3ds.3dsx",
+            "options": {
+                "cwd": "C:\\Users\\Ben\\Desktop\\sonic_adventure_3ds\\"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always"
+            }
+        },
+        {
+            "label": "just build",
+            "type": "shell",
+            "command": "make",
+            "options": {
+                "cwd": "C:\\Users\\Ben\\Desktop\\sonic_adventure_3ds\\"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always"
+            }
+        }
+    ]
+}
