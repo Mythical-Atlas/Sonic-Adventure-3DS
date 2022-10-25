@@ -15,71 +15,6 @@
 
 typedef struct { float position[3]; float texcoord[2]; float normal[3]; } vertex;
 
-static const vertex vertex_list[] =
-{
-	// First face (PZ)
-	// First triangle
-	{ {-0.5f, -0.5f, +0.5f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {+0.5f, -0.5f, +0.5f}, {1.0f, 0.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {+0.5f, +0.5f, +0.5f}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f} },
-	// Second triangle
-	{ {+0.5f, +0.5f, +0.5f}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {-0.5f, +0.5f, +0.5f}, {0.0f, 1.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {-0.5f, -0.5f, +0.5f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f} },
-
-	// Second face (MZ)
-	// First triangle
-	{ {-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {-0.5f, +0.5f, -0.5f}, {1.0f, 0.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {+0.5f, +0.5f, -0.5f}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f} },
-	// Second triangle
-	{ {+0.5f, +0.5f, -0.5f}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {+0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f} },
-
-	// Third face (PX)
-	// First triangle
-	{ {+0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {+0.5f, +0.5f, -0.5f}, {1.0f, 0.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {+0.5f, +0.5f, +0.5f}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f} },
-	// Second triangle
-	{ {+0.5f, +0.5f, +0.5f}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {+0.5f, -0.5f, +0.5f}, {0.0f, 1.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {+0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f} },
-
-	// Fourth face (MX)
-	// First triangle
-	{ {-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {-0.5f, -0.5f, +0.5f}, {1.0f, 0.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {-0.5f, +0.5f, +0.5f}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f} },
-	// Second triangle
-	{ {-0.5f, +0.5f, +0.5f}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {-0.5f, +0.5f, -0.5f}, {0.0f, 1.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f} },
-
-	// Fifth face (PY)
-	// First triangle
-	{ {-0.5f, +0.5f, -0.5f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {-0.5f, +0.5f, +0.5f}, {1.0f, 0.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {+0.5f, +0.5f, +0.5f}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f} },
-	// Second triangle
-	{ {+0.5f, +0.5f, +0.5f}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {+0.5f, +0.5f, -0.5f}, {0.0f, 1.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {-0.5f, +0.5f, -0.5f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f} },
-
-	// Sixth face (MY)
-	// First triangle
-	{ {-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {+0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {+0.5f, -0.5f, +0.5f}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f} },
-	// Second triangle
-	{ {+0.5f, -0.5f, +0.5f}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {-0.5f, -0.5f, +0.5f}, {0.0f, 1.0f}, {1.0f, 0.0f, 0.0f} },
-	{ {-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f} },
-};
-
-#define vertex_list_count (sizeof(vertex_list)/sizeof(vertex_list[0]))
-
 static DVLB_s* vshader_dvlb;
 static shaderProgram_s program;
 static int uLoc_projection, uLoc_modelView;
@@ -133,8 +68,8 @@ static void sceneInit(void) {
 		float normZ = calculateNormalZ(vert0, vert1, vert2);
 
 		teapotVertexList[v * 3 + 0] = {{vert0[0], vert0[1], vert0[2]}, {0.0f, 0.0f}, {normX, normY, normZ}};
-		teapotVertexList[v * 3 + 1] = {{vert1[0], vert1[1], vert1[2]}, {0.0f, 0.0f}, {normX, normY, normZ}};
-		teapotVertexList[v * 3 + 2] = {{vert2[0], vert2[1], vert2[2]}, {0.0f, 0.0f}, {normX, normY, normZ}};
+		teapotVertexList[v * 3 + 1] = {{vert1[0], vert1[1], vert1[2]}, {1.0f, 1.0f}, {normX, normY, normZ}};
+		teapotVertexList[v * 3 + 2] = {{vert2[0], vert2[1], vert2[2]}, {0.0f, 1.0f}, {normX, normY, normZ}};
 	}
 
 	// Load the vertex shader, create a shader program and bind it
@@ -163,7 +98,8 @@ static void sceneInit(void) {
 
 	// Create the VBO (vertex buffer object)
 	vbo_data = linearAlloc(sizeof(teapotVertexList));
-	memcpy(vbo_data, teapotVertexList, sizeof(teapotVertexList));
+	// copy vertex list here if object doesn't change
+	//memcpy(vbo_data, teapotVertexList, sizeof(teapotVertexList));
 
 	// Configure buffers
 	C3D_BufInfo* bufInfo = C3D_GetBufInfo();
@@ -187,6 +123,9 @@ static void sceneInit(void) {
 
 static void sceneRender(void)
 {
+	// copy vertex list here if object changes
+	memcpy(vbo_data, teapotVertexList, sizeof(teapotVertexList));
+
 	// Calculate the modelView matrix
 	C3D_Mtx modelView;
 	Mtx_Identity(&modelView);
