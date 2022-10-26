@@ -6,63 +6,25 @@
 #include "kitten_t3x.h"
 #include "eye_t3x.h"
 #include "teapot.h"
+#include "graphics.h"
 
-#define CLEAR_COLOR 0x68B0D8FF
+using namespace std;
 
-#define DISPLAY_TRANSFER_FLAGS \
-	(GX_TRANSFER_FLIP_VERT(0) | GX_TRANSFER_OUT_TILED(0) | GX_TRANSFER_RAW_COPY(0) | \
-	GX_TRANSFER_IN_FORMAT(GX_TRANSFER_FMT_RGBA8) | GX_TRANSFER_OUT_FORMAT(GX_TRANSFER_FMT_RGB8) | \
-	GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO))
+C3D_Tex kitten_tex;
+C3D_Tex eyeTexture;
+float angleX = 0.0, angleY = 0.0;
 
-typedef struct { float position[3]; float texcoord[2]; float normal[3]; } vertex;
+vertex teapot1VertexList[teapot_count / 3];
+vertex teapot2VertexList[teapot_count / 3];
 
-// C3D_Mtx is a 4x4 matrix of floats
-// can be accessed as vectors
-// C3d_FVec is a 4d vector of floats (accessed as xyzw, ijkr, or array of floats)
+void* vbo1Data;
+void* vbo2Data;
+C3D_BufInfo buf1Info;
+C3D_BufInfo buf2Info;
 
-static DVLB_s* vshader_dvlb;
-static shaderProgram_s shaderProgram;
-static int uLoc_projection, uLoc_modelView;
-static int uLoc_lightVec, uLoc_lightHalfVec, uLoc_lightClr, uLoc_material;
-static C3D_Mtx projection;
-static C3D_Mtx material =
-{
-	{
-	{ { 0.0f, 0.2f, 0.2f, 0.2f } }, // Ambient
-	{ { 0.0f, 0.4f, 0.4f, 0.4f } }, // Diffuse
-	{ { 0.0f, 0.8f, 0.8f, 0.8f } }, // Specular
-	{ { 1.0f, 0.0f, 0.0f, 0.0f } }, // Emission
-	}
-};
+void sceneInit() {
+	initGraphics();
 
-static void* vbo_data;
-static C3D_Tex kitten_tex;
-static C3D_Tex eyeTexture;
-static float angleX = 0.0, angleY = 0.0;
-
-static vertex teapotVertexList[teapot_count / 3];
-
-// Helper function for loading a texture from memory
-static bool loadTextureFromMem(C3D_Tex* tex, C3D_TexCube* cube, const void* data, size_t size)
-{
-	Tex3DS_Texture t3x = Tex3DS_TextureImport(data, size, tex, cube, false);
-	if (!t3x)
-		return false;
-
-	// Delete the t3x object since we don't need it
-	Tex3DS_TextureFree(t3x);
-	return true;
-}
-
-static float lineX(float vert1[3], float vert0[3]) {return vert1[0] - vert0[0];}
-static float lineY(float vert1[3], float vert0[3]) {return vert1[1] - vert0[1];}
-static float lineZ(float vert1[3], float vert0[3]) {return vert1[2] - vert0[2];}
-
-static float calculateNormalX(float vert0[3], float vert1[3], float vert2[3]) {return lineY(vert1, vert0) * lineZ(vert2, vert0) - lineZ(vert1, vert0) * lineY(vert2, vert0);}
-static float calculateNormalY(float vert0[3], float vert1[3], float vert2[3]) {return lineZ(vert1, vert0) * lineX(vert2, vert0) - lineX(vert1, vert0) * lineZ(vert2, vert0);}
-static float calculateNormalZ(float vert0[3], float vert1[3], float vert2[3]) {return lineX(vert1, vert0) * lineY(vert2, vert0) - lineY(vert1, vert0) * lineX(vert2, vert0);}
-
-static void sceneInit(void) {
 	for(int v = 0; v < teapot_count / 9; v++) {
 		float vert0[3] = {teapot[v * 9 + 0], teapot[v * 9 + 1], teapot[v * 9 + 2]};
 		float vert1[3] = {teapot[v * 9 + 3], teapot[v * 9 + 4], teapot[v * 9 + 5]};
@@ -72,124 +34,84 @@ static void sceneInit(void) {
 		float normY = calculateNormalY(vert0, vert1, vert2);
 		float normZ = calculateNormalZ(vert0, vert1, vert2);
 
-		teapotVertexList[v * 3 + 0] = {{vert0[0], vert0[1], vert0[2]}, {0.0f, 0.0f}, {normX, normY, normZ}};
-		teapotVertexList[v * 3 + 1] = {{vert1[0], vert1[1], vert1[2]}, {1.0f, 1.0f}, {normX, normY, normZ}};
-		teapotVertexList[v * 3 + 2] = {{vert2[0], vert2[1], vert2[2]}, {0.0f, 1.0f}, {normX, normY, normZ}};
+		teapot1VertexList[v * 3 + 0] = {{vert0[0], vert0[1], vert0[2]}, {0.0f, 0.0f}, {normX, normY, normZ}};
+		teapot1VertexList[v * 3 + 1] = {{vert1[0], vert1[1], vert1[2]}, {1.0f, 1.0f}, {normX, normY, normZ}};
+		teapot1VertexList[v * 3 + 2] = {{vert2[0], vert2[1], vert2[2]}, {0.0f, 1.0f}, {normX, normY, normZ}};
+
+		teapot2VertexList[v * 3 + 0] = {{vert0[0] + 2, vert0[1], vert0[2]}, {0.0f, 0.0f}, {normX, normY, normZ}};
+		teapot2VertexList[v * 3 + 1] = {{vert1[0] + 2, vert1[1], vert1[2]}, {1.0f, 1.0f}, {normX, normY, normZ}};
+		teapot2VertexList[v * 3 + 2] = {{vert2[0] + 2, vert2[1], vert2[2]}, {0.0f, 1.0f}, {normX, normY, normZ}};
 	}
 
-	// Load the vertex shader, create a shader program and bind it
-	vshader_dvlb = DVLB_ParseFile((u32*)vshader_shbin, vshader_shbin_size);
-	shaderProgramInit(&shaderProgram);
-	shaderProgramSetVsh(&shaderProgram, &vshader_dvlb->DVLE[0]);
-	C3D_BindProgram(&shaderProgram);
-
-	// Get the location of the uniforms
-	uLoc_projection   = shaderInstanceGetUniformLocation(shaderProgram.vertexShader, "projection");
-	uLoc_modelView    = shaderInstanceGetUniformLocation(shaderProgram.vertexShader, "modelView");
-	uLoc_lightVec     = shaderInstanceGetUniformLocation(shaderProgram.vertexShader, "lightVec");
-	uLoc_lightHalfVec = shaderInstanceGetUniformLocation(shaderProgram.vertexShader, "lightHalfVec");
-	uLoc_lightClr     = shaderInstanceGetUniformLocation(shaderProgram.vertexShader, "lightClr");
-	uLoc_material     = shaderInstanceGetUniformLocation(shaderProgram.vertexShader, "material");
-
-	// Configure attributes for use with the vertex shader
-	C3D_AttrInfo* attrInfo = C3D_GetAttrInfo();
-	AttrInfo_Init(attrInfo);
-	AttrInfo_AddLoader(attrInfo, 0, GPU_FLOAT, 3); // v0=position
-	AttrInfo_AddLoader(attrInfo, 1, GPU_FLOAT, 2); // v1=texcoord
-	AttrInfo_AddLoader(attrInfo, 2, GPU_FLOAT, 3); // v2=normal
-
-	// Compute the projection matrix
 	Mtx_PerspTilt(&projection, C3D_AngleFromDegrees(80.0f), C3D_AspectRatioTop, 0.01f, 1000.0f, false);
 
-	// Create the VBO (vertex buffer object)
-	vbo_data = linearAlloc(sizeof(teapotVertexList));
-	// copy vertex list here if object doesn't change
-	//memcpy(vbo_data, teapotVertexList, sizeof(teapotVertexList));
+	vbo1Data = linearAlloc(sizeof(teapot1VertexList));
+	BufInfo_Init(&buf1Info);
+	BufInfo_Add(&buf1Info, vbo1Data, sizeof(vertex), 3, 0x210);
 
-	// Configure buffers
-	C3D_BufInfo* bufInfo = C3D_GetBufInfo();
-	BufInfo_Init(bufInfo);
-	BufInfo_Add(bufInfo, vbo_data, sizeof(vertex), 3, 0x210);
+	vbo2Data = linearAlloc(sizeof(teapot1VertexList));
+	BufInfo_Init(&buf2Info);
+	BufInfo_Add(&buf2Info, vbo2Data, sizeof(vertex), 3, 0x210);
 
-	// Load the texture and bind it to the first texture unit
-	if (!loadTextureFromMem(&kitten_tex, NULL, kitten_t3x, kitten_t3x_size))
-		svcBreak(USERBREAK_PANIC);
+	if(!loadTextureFromMem(&kitten_tex, kitten_t3x, kitten_t3x_size)) {svcBreak(USERBREAK_PANIC);}
 	C3D_TexSetFilter(&kitten_tex, GPU_LINEAR, GPU_NEAREST);
-	//C3D_TexBind(0, &kitten_tex);
 
-	if(!loadTextureFromMem(&eyeTexture, NULL, eye_t3x, eye_t3x_size)) {svcBreak(USERBREAK_PANIC);}
+	if(!loadTextureFromMem(&eyeTexture, eye_t3x, eye_t3x_size)) {svcBreak(USERBREAK_PANIC);}
 	C3D_TexSetFilter(&eyeTexture, GPU_LINEAR, GPU_NEAREST);
-
-	// Configure the first fragment shading substage to blend the texture color with
-	// the vertex color (calculated by the vertex shader using a lighting algorithm)
-	// See https://www.opengl.org/sdk/docs/man2/xhtml/glTexEnv.xml for more insight
-	C3D_TexEnv* env = C3D_GetTexEnv(0);
-	C3D_TexEnvInit(env);
-	C3D_TexEnvSrc(env, C3D_Both, GPU_TEXTURE0, GPU_PRIMARY_COLOR, (GPU_TEVSRC)0);
-	C3D_TexEnvFunc(env, C3D_Both, GPU_MODULATE);
 }
 
-static void sceneRender(void)
-{
-	// copy vertex list here if object changes
-	memcpy(vbo_data, teapotVertexList, sizeof(teapotVertexList));
-
-	// Calculate the modelView matrix
+static void sceneRender(void) {
 	C3D_Mtx modelView;
 	Mtx_Identity(&modelView);
 	Mtx_Translate(&modelView, 0.0, 0.0, -2.0 + 0.5*sinf(angleX), true);
 	Mtx_RotateX(&modelView, angleX, true);
 	Mtx_RotateY(&modelView, angleY, true);
 
-	// Rotate the cube each frame
 	angleX += M_PI / 180;
 	angleY += M_PI / 360;
 
-	// Update the uniforms
-	C3D_FVUnifMtx4x4(GPU_VERTEX_SHADER, uLoc_projection, &projection);
-	C3D_FVUnifMtx4x4(GPU_VERTEX_SHADER, uLoc_modelView,  &modelView);
-	C3D_FVUnifMtx4x4(GPU_VERTEX_SHADER, uLoc_material,   &material);
-	C3D_FVUnifSet(GPU_VERTEX_SHADER, uLoc_lightVec,     0.0f, 0.0f, -1.0f, 0.0f);
-	C3D_FVUnifSet(GPU_VERTEX_SHADER, uLoc_lightHalfVec, 0.0f, 0.0f, -1.0f, 0.0f);
-	C3D_FVUnifSet(GPU_VERTEX_SHADER, uLoc_lightClr,     1.0f, 1.0f,  1.0f, 1.0f);
+    updateUniforms(&modelView);
+
+	C3D_SetBufInfo(&buf1Info);
+	memcpy(vbo1Data, teapot1VertexList, sizeof(teapot1VertexList));
 
 	C3D_TexBind(0, &kitten_tex);
-
-	// Draw the VBO
 	C3D_DrawArrays(GPU_TRIANGLES, 0, teapot_count / 3 / 3 * 2);
 
 	C3D_TexBind(0, &eyeTexture);
+	C3D_DrawArrays(GPU_TRIANGLES, teapot_count / 3 / 3 * 2, teapot_count / 3 / 3);
 
+	C3D_SetBufInfo(&buf2Info);
+	memcpy(vbo2Data, teapot2VertexList, sizeof(teapot2VertexList));
+
+	C3D_TexBind(0, &kitten_tex);
+	C3D_DrawArrays(GPU_TRIANGLES, 0, teapot_count / 3 / 3 * 2);
+
+	C3D_TexBind(0, &eyeTexture);
 	C3D_DrawArrays(GPU_TRIANGLES, teapot_count / 3 / 3 * 2, teapot_count / 3 / 3);
 }
 
 static void sceneExit(void) {
-	// Free the texture
 	C3D_TexDelete(&kitten_tex);
+	C3D_TexDelete(&eyeTexture);
 
-	// Free the VBO
-	linearFree(vbo_data);
+	linearFree(vbo1Data);
+	linearFree(vbo2Data);
 
-	// Free the shader program
 	shaderProgramFree(&shaderProgram);
 	DVLB_Free(vshader_dvlb);
 }
 
 int main() {
-	// Initialize graphics
 	gfxInitDefault();
 	C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
 
-	// Initialize the render target
 	C3D_RenderTarget* target = C3D_RenderTargetCreate(240, 400, GPU_RB_RGBA8, GPU_RB_DEPTH24_STENCIL8);
 	C3D_RenderTargetSetOutput(target, GFX_TOP, GFX_LEFT, DISPLAY_TRANSFER_FLAGS);
 
-	// Initialize the scene
 	sceneInit();
 
-	// Main loop
-	while (aptMainLoop())
-	{
+	while (aptMainLoop()) {
 		hidScanInput();
 
 		// Respond to user input
@@ -198,7 +120,7 @@ int main() {
 			break; // break in order to return to hbmenu
 
 		// Render the scene
-		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
+		C3D_FrameBegin(C3D_FRAME_SYNCDRAW); // used to be C3D_FRAME_SYNCDRAW instead of 0
 			C3D_RenderTargetClear(target, C3D_CLEAR_ALL, CLEAR_COLOR, 0);
 			C3D_FrameDrawOn(target);
 			sceneRender();
