@@ -102,6 +102,7 @@ main.o: C:/Users/Ben/Desktop/sonic_adventure_3ds/source/main.cpp \
  C:/devkitPro/libctru/include/tex3ds.h \
  C:/Users/Ben/Desktop/sonic_adventure_3ds/build/vshader_shbin.h \
  C:/Users/Ben/Desktop/sonic_adventure_3ds/build/kitten_t3x.h \
+ C:/Users/Ben/Desktop/sonic_adventure_3ds/build/eye_t3x.h \
  C:/Users/Ben/Desktop/sonic_adventure_3ds/source/teapot.h
 C:/devkitPro/libctru/include/3ds.h:
 C:/devkitPro/libctru/include/3ds/types.h:
@@ -206,4 +207,5 @@ C:/devkitPro/libctru/include/c3d/renderqueue.h:
 C:/devkitPro/libctru/include/tex3ds.h:
 C:/Users/Ben/Desktop/sonic_adventure_3ds/build/vshader_shbin.h:
 C:/Users/Ben/Desktop/sonic_adventure_3ds/build/kitten_t3x.h:
+C:/Users/Ben/Desktop/sonic_adventure_3ds/build/eye_t3x.h:
 C:/Users/Ben/Desktop/sonic_adventure_3ds/source/teapot.h:

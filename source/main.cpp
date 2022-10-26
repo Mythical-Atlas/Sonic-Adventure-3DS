@@ -4,6 +4,7 @@
 #include <string.h>
 #include "vshader_shbin.h"
 #include "kitten_t3x.h"
+#include "eye_t3x.h"
 #include "teapot.h"
 
 #define CLEAR_COLOR 0x68B0D8FF
@@ -15,8 +16,12 @@
 
 typedef struct { float position[3]; float texcoord[2]; float normal[3]; } vertex;
 
+// C3D_Mtx is a 4x4 matrix of floats
+// can be accessed as vectors
+// C3d_FVec is a 4d vector of floats (accessed as xyzw, ijkr, or array of floats)
+
 static DVLB_s* vshader_dvlb;
-static shaderProgram_s program;
+static shaderProgram_s shaderProgram;
 static int uLoc_projection, uLoc_modelView;
 static int uLoc_lightVec, uLoc_lightHalfVec, uLoc_lightClr, uLoc_material;
 static C3D_Mtx projection;
@@ -32,6 +37,7 @@ static C3D_Mtx material =
 
 static void* vbo_data;
 static C3D_Tex kitten_tex;
+static C3D_Tex eyeTexture;
 static float angleX = 0.0, angleY = 0.0;
 
 static vertex teapotVertexList[teapot_count / 3];
@@ -52,8 +58,7 @@ static float lineX(float vert1[3], float vert0[3]) {return vert1[0] - vert0[0];}
 static float lineY(float vert1[3], float vert0[3]) {return vert1[1] - vert0[1];}
 static float lineZ(float vert1[3], float vert0[3]) {return vert1[2] - vert0[2];}
 
-static float calculateNormalX(float vert0[3], float vert1[3], float vert2[3]) {
-	return lineY(vert1, vert0) * lineZ(vert2, vert0) - lineZ(vert1, vert0) * lineY(vert2, vert0);}
+static float calculateNormalX(float vert0[3], float vert1[3], float vert2[3]) {return lineY(vert1, vert0) * lineZ(vert2, vert0) - lineZ(vert1, vert0) * lineY(vert2, vert0);}
 static float calculateNormalY(float vert0[3], float vert1[3], float vert2[3]) {return lineZ(vert1, vert0) * lineX(vert2, vert0) - lineX(vert1, vert0) * lineZ(vert2, vert0);}
 static float calculateNormalZ(float vert0[3], float vert1[3], float vert2[3]) {return lineX(vert1, vert0) * lineY(vert2, vert0) - lineY(vert1, vert0) * lineX(vert2, vert0);}
 
@@ -74,17 +79,17 @@ static void sceneInit(void) {
 
 	// Load the vertex shader, create a shader program and bind it
 	vshader_dvlb = DVLB_ParseFile((u32*)vshader_shbin, vshader_shbin_size);
-	shaderProgramInit(&program);
-	shaderProgramSetVsh(&program, &vshader_dvlb->DVLE[0]);
-	C3D_BindProgram(&program);
+	shaderProgramInit(&shaderProgram);
+	shaderProgramSetVsh(&shaderProgram, &vshader_dvlb->DVLE[0]);
+	C3D_BindProgram(&shaderProgram);
 
 	// Get the location of the uniforms
-	uLoc_projection   = shaderInstanceGetUniformLocation(program.vertexShader, "projection");
-	uLoc_modelView    = shaderInstanceGetUniformLocation(program.vertexShader, "modelView");
-	uLoc_lightVec     = shaderInstanceGetUniformLocation(program.vertexShader, "lightVec");
-	uLoc_lightHalfVec = shaderInstanceGetUniformLocation(program.vertexShader, "lightHalfVec");
-	uLoc_lightClr     = shaderInstanceGetUniformLocation(program.vertexShader, "lightClr");
-	uLoc_material     = shaderInstanceGetUniformLocation(program.vertexShader, "material");
+	uLoc_projection   = shaderInstanceGetUniformLocation(shaderProgram.vertexShader, "projection");
+	uLoc_modelView    = shaderInstanceGetUniformLocation(shaderProgram.vertexShader, "modelView");
+	uLoc_lightVec     = shaderInstanceGetUniformLocation(shaderProgram.vertexShader, "lightVec");
+	uLoc_lightHalfVec = shaderInstanceGetUniformLocation(shaderProgram.vertexShader, "lightHalfVec");
+	uLoc_lightClr     = shaderInstanceGetUniformLocation(shaderProgram.vertexShader, "lightClr");
+	uLoc_material     = shaderInstanceGetUniformLocation(shaderProgram.vertexShader, "material");
 
 	// Configure attributes for use with the vertex shader
 	C3D_AttrInfo* attrInfo = C3D_GetAttrInfo();
@@ -110,7 +115,10 @@ static void sceneInit(void) {
 	if (!loadTextureFromMem(&kitten_tex, NULL, kitten_t3x, kitten_t3x_size))
 		svcBreak(USERBREAK_PANIC);
 	C3D_TexSetFilter(&kitten_tex, GPU_LINEAR, GPU_NEAREST);
-	C3D_TexBind(0, &kitten_tex);
+	//C3D_TexBind(0, &kitten_tex);
+
+	if(!loadTextureFromMem(&eyeTexture, NULL, eye_t3x, eye_t3x_size)) {svcBreak(USERBREAK_PANIC);}
+	C3D_TexSetFilter(&eyeTexture, GPU_LINEAR, GPU_NEAREST);
 
 	// Configure the first fragment shading substage to blend the texture color with
 	// the vertex color (calculated by the vertex shader using a lighting algorithm)
@@ -145,12 +153,17 @@ static void sceneRender(void)
 	C3D_FVUnifSet(GPU_VERTEX_SHADER, uLoc_lightHalfVec, 0.0f, 0.0f, -1.0f, 0.0f);
 	C3D_FVUnifSet(GPU_VERTEX_SHADER, uLoc_lightClr,     1.0f, 1.0f,  1.0f, 1.0f);
 
+	C3D_TexBind(0, &kitten_tex);
+
 	// Draw the VBO
-	C3D_DrawArrays(GPU_TRIANGLES, 0, teapot_count / 3);
+	C3D_DrawArrays(GPU_TRIANGLES, 0, teapot_count / 3 / 3 * 2);
+
+	C3D_TexBind(0, &eyeTexture);
+
+	C3D_DrawArrays(GPU_TRIANGLES, teapot_count / 3 / 3 * 2, teapot_count / 3 / 3);
 }
 
-static void sceneExit(void)
-{
+static void sceneExit(void) {
 	// Free the texture
 	C3D_TexDelete(&kitten_tex);
 
@@ -158,12 +171,11 @@ static void sceneExit(void)
 	linearFree(vbo_data);
 
 	// Free the shader program
-	shaderProgramFree(&program);
+	shaderProgramFree(&shaderProgram);
 	DVLB_Free(vshader_dvlb);
 }
 
-int main()
-{
+int main() {
 	// Initialize graphics
 	gfxInitDefault();
 	C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
