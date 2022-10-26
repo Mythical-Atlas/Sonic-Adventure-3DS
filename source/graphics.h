@@ -1,3 +1,12 @@
+/*
+VBO notes to keep in mind:
+- a VBO cannot be rewritten mid-frame
+- multiples VBOs can be used in one frame
+- one big VBO can be used for a frame
+- VBOs shouldn't really be reallocated often (slow)
+    - best practice is to allocate exactly as much as you need per VBO at the beginning of a scene, and you don't have to use all of it
+*/
+
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
@@ -18,7 +27,21 @@ typedef struct {
     float position[3];
     float texcoord[2];
     float normal[3];
-} vertex;
+} Vertex;
+
+typedef struct {
+    float x;
+    float y;
+    float z;
+} Vector3;
+
+Vector3 GetVector3(float input[3]) {
+    Vector3 output;
+    output.x = input[0];
+    output.y = input[1];
+    output.z = input[2];
+    return output;
+}
 
 DVLB_s* vshader_dvlb;
 shaderProgram_s shaderProgram;

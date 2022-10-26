@@ -7,6 +7,7 @@
 #include "eye_t3x.h"
 #include "teapot.h"
 #include "graphics.h"
+#include "gameObject.h"
 
 using namespace std;
 
@@ -14,13 +15,11 @@ C3D_Tex kitten_tex;
 C3D_Tex eyeTexture;
 float angleX = 0.0, angleY = 0.0;
 
-vertex teapot1VertexList[teapot_count / 3];
-vertex teapot2VertexList[teapot_count / 3];
+Vertex teapot1VertexList[teapot_count / 3];
+Vertex teapot2VertexList[teapot_count / 3];
 
-void* vbo1Data;
-void* vbo2Data;
-C3D_BufInfo buf1Info;
-C3D_BufInfo buf2Info;
+GameObject teapot1;
+GameObject teapot2;
 
 void sceneInit() {
 	initGraphics();
@@ -45,22 +44,18 @@ void sceneInit() {
 
 	Mtx_PerspTilt(&projection, C3D_AngleFromDegrees(80.0f), C3D_AspectRatioTop, 0.01f, 1000.0f, false);
 
-	vbo1Data = linearAlloc(sizeof(teapot1VertexList));
-	BufInfo_Init(&buf1Info);
-	BufInfo_Add(&buf1Info, vbo1Data, sizeof(vertex), 3, 0x210);
-
-	vbo2Data = linearAlloc(sizeof(teapot1VertexList));
-	BufInfo_Init(&buf2Info);
-	BufInfo_Add(&buf2Info, vbo2Data, sizeof(vertex), 3, 0x210);
-
 	if(!loadTextureFromMem(&kitten_tex, kitten_t3x, kitten_t3x_size)) {svcBreak(USERBREAK_PANIC);}
 	C3D_TexSetFilter(&kitten_tex, GPU_LINEAR, GPU_NEAREST);
 
 	if(!loadTextureFromMem(&eyeTexture, eye_t3x, eye_t3x_size)) {svcBreak(USERBREAK_PANIC);}
 	C3D_TexSetFilter(&eyeTexture, GPU_LINEAR, GPU_NEAREST);
+
+	teapot1.loadVertices(teapot1VertexList, teapot_count / 3);
+	teapot1.setTextures(&eyeTexture, 1);
+	teapot1.initialize(GetVector3(new float[]{0, 0, 0}), GetVector3(new float[]{0, 0, 0}), GetVector3(new float[]{0, 0, 0}));
 }
 
-static void sceneRender(void) {
+void sceneRender(void) {
 	C3D_Mtx modelView;
 	Mtx_Identity(&modelView);
 	Mtx_Translate(&modelView, 0.0, 0.0, -2.0 + 0.5*sinf(angleX), true);
@@ -72,7 +67,10 @@ static void sceneRender(void) {
 
     updateUniforms(&modelView);
 
-	C3D_SetBufInfo(&buf1Info);
+	teapot1.updateVertices();
+	teapot1.draw();
+
+	/*C3D_SetBufInfo(&buf1Info);
 	memcpy(vbo1Data, teapot1VertexList, sizeof(teapot1VertexList));
 
 	C3D_TexBind(0, &kitten_tex);
@@ -88,15 +86,16 @@ static void sceneRender(void) {
 	C3D_DrawArrays(GPU_TRIANGLES, 0, teapot_count / 3 / 3 * 2);
 
 	C3D_TexBind(0, &eyeTexture);
-	C3D_DrawArrays(GPU_TRIANGLES, teapot_count / 3 / 3 * 2, teapot_count / 3 / 3);
+	C3D_DrawArrays(GPU_TRIANGLES, teapot_count / 3 / 3 * 2, teapot_count / 3 / 3);*/
 }
 
-static void sceneExit(void) {
+void sceneExit() {
 	C3D_TexDelete(&kitten_tex);
 	C3D_TexDelete(&eyeTexture);
 
-	linearFree(vbo1Data);
-	linearFree(vbo2Data);
+	teapot1.free();
+	//linearFree(vbo1Data);
+	//linearFree(vbo2Data);
 
 	shaderProgramFree(&shaderProgram);
 	DVLB_Free(vshader_dvlb);
@@ -120,7 +119,7 @@ int main() {
 			break; // break in order to return to hbmenu
 
 		// Render the scene
-		C3D_FrameBegin(C3D_FRAME_SYNCDRAW); // used to be C3D_FRAME_SYNCDRAW instead of 0
+		C3D_FrameBegin(C3D_FRAME_SYNCDRAW); // can be 0
 			C3D_RenderTargetClear(target, C3D_CLEAR_ALL, CLEAR_COLOR, 0);
 			C3D_FrameDrawOn(target);
 			sceneRender();
