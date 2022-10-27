@@ -13,7 +13,7 @@ class GameObject {
         
         C3D_Tex* textures;
         int textureCount;
-        //int* triTextureIDs;
+        int* triTextureIDs;
 
         Vector3 position;
         Vector3 rotation;
@@ -27,9 +27,10 @@ class GameObject {
             modelVertices = vertices;
             this->vertexCount = vertexCount;
         }
-        void setTextures(C3D_Tex* textures, int textureCount/*, int* triTextureIDs*/) {
+        void setTextures(C3D_Tex* textures, int textureCount, int* triTextureIDs) {
             this->textures = textures;
             this->textureCount = textureCount;
+            this->triTextureIDs = triTextureIDs;
         }
 
         void initialize(Vector3 position, Vector3 rotation, Vector3 scale) {
@@ -67,8 +68,10 @@ class GameObject {
             C3D_SetBufInfo(&buffer);
             memcpy(vboData, vertices, sizeof(Vertex) * vertexCount);
 
-            C3D_TexBind(0, &textures[0]);
-            C3D_DrawArrays(GPU_TRIANGLES, 0, vertexCount);
+            for(int i = 0; i < vertexCount; i += 3) {
+                C3D_TexBind(0, &textures[triTextureIDs[(int)(i / 3)]]);
+                C3D_DrawArrays(GPU_TRIANGLES, i, 3);
+            }
         }
 
         void free() {

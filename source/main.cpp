@@ -3,29 +3,45 @@
 #include <tex3ds.h>
 #include <string.h>
 
+#include "mtx_kuchinaka0_t3x.h"
+#include "mtx_kuchinaka1_t3x.h"
+#include "s_anakage1_t3x.h"
+#include "s_hando2_t3x.h"
+#include "s_hando3_t3x.h"
+#include "s_testhand_t3x.h"
+#include "stx_btest1_t3x.h"
+#include "stx_eye2_t3x.h"
+#include "stx_ha_t3x.h"
+#include "stx_hara_t3x.h"
+#include "stx_hoho_t3x.h"
+#include "stx_itemring_t3x.h"
+#include "stx_itemshoos0_t3x.h"
+#include "stx_kanagu_t3x.h"
+#include "stx_newspin_t3x.h"
+#include "ym_sjppse_t3x.h"
+
 #include "vshader_shbin.h"
-#include "kitten_t3x.h"
-#include "eye_t3x.h"
 #include "teapot.h"
 #include "graphics.h"
 #include "gameObject.h"
+
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 
 //using namespace std;
 
-C3D_Tex kitten_tex;
-C3D_Tex eyeTexture;
+C3D_Tex* sonicTextures;
+
 float angleX = 0.0, angleY = 0.0;
 
 Vertex teapot1VertexList[teapot_count / 3];
 Vertex teapot2VertexList[teapot_count / 3];
 
 Vertex* sonicVertices;
+int* sonicTextureIDs;
 
 GameObject teapot1;
 GameObject teapot2;
-
 
 std::string inputfile = "romfs:/sonic.obj";
 std::string mtlDir = "romfs:/";
@@ -46,7 +62,9 @@ void sceneInit() {
 	int s = 3;
 
 	sonicVertices = new Vertex[attrib.vertices.size()];
+	sonicTextureIDs = new int[shapes[s].mesh.material_ids.size()];
 	int sonicVertexCount = 0;
+	//int sonicFaceCount = 0;
 
 	// Loop over shapes
 	//for (size_t s = 0; s < shapes.size(); s++) {
@@ -86,11 +104,12 @@ void sceneInit() {
 				sonicVertices[sonicVertexCount++] = {{vx, vy, vz}, {tx, ty}, {nx, ny, nz}};
 			}
 			index_offset += fv;
-
-			// per-face material
-			shapes[s].mesh.material_ids[f];
 		}
 	//}
+
+
+	// per-face material
+	for(size_t f = 0; f < shapes[s].mesh.material_ids.size(); f++) {sonicTextureIDs[f] = shapes[s].mesh.material_ids[f];}
 
 	initGraphics();
 
@@ -114,21 +133,51 @@ void sceneInit() {
 
 	Mtx_PerspTilt(&projection, C3D_AngleFromDegrees(80.0f), C3D_AspectRatioTop, 0.01f, 1000.0f, false);
 
-	if(!loadTextureFromMem(&kitten_tex, kitten_t3x, kitten_t3x_size)) {svcBreak(USERBREAK_PANIC);}
-	C3D_TexSetFilter(&kitten_tex, GPU_LINEAR, GPU_NEAREST);
+	sonicTextures = new C3D_Tex[16];
 
-	if(!loadTextureFromMem(&eyeTexture, eye_t3x, eye_t3x_size)) {svcBreak(USERBREAK_PANIC);}
-	C3D_TexSetFilter(&eyeTexture, GPU_LINEAR, GPU_NEAREST);
+	//loadTextureFromMem(&sonicTextures[ 0], mtx_kuchinaka0_t3x, mtx_kuchinaka0_t3x_size);
+	//loadTextureFromMem(&sonicTextures[ 1], mtx_kuchinaka1_t3x, mtx_kuchinaka1_t3x_size);
+	loadTextureFromMem(&sonicTextures[ 5], s_anakage1_t3x, s_anakage1_t3x_size);
+	//loadTextureFromMem(&sonicTextures[ 3], s_hando2_t3x, s_hando2_t3x_size);
+	//loadTextureFromMem(&sonicTextures[ 4], s_hando3_t3x, s_hando3_t3x_size);
+	//loadTextureFromMem(&sonicTextures[ 5], s_testhand_t3x, s_testhand_t3x_size);
+	loadTextureFromMem(&sonicTextures[ 0], stx_btest1_t3x, stx_btest1_t3x_size);
+	//loadTextureFromMem(&sonicTextures[ 7], stx_eye2_t3x, stx_eye2_t3x_size);
+	//loadTextureFromMem(&sonicTextures[ 8], stx_ha_t3x, stx_ha_t3x_size);
+	//loadTextureFromMem(&sonicTextures[ 9], stx_hara_t3x, stx_hara_t3x_size);
+	loadTextureFromMem(&sonicTextures[ 6], stx_hoho_t3x, stx_hoho_t3x_size);
+	//loadTextureFromMem(&sonicTextures[11], stx_itemring_t3x, stx_itemring_t3x_size);
+	//loadTextureFromMem(&sonicTextures[12], stx_itemshoos0_t3x, stx_itemshoos0_t3x_size);
+	//loadTextureFromMem(&sonicTextures[13], stx_kanagu_t3x, stx_kanagu_t3x_size);
+	//loadTextureFromMem(&sonicTextures[14], stx_newspin_t3x, stx_newspin_t3x_size);
+	//loadTextureFromMem(&sonicTextures[15], ym_sjppse_t3x, ym_sjppse_t3x_size);
+
+	C3D_TexSetFilter(&sonicTextures[ 0], GPU_LINEAR, GPU_NEAREST);
+	C3D_TexSetFilter(&sonicTextures[ 1], GPU_LINEAR, GPU_NEAREST);
+	C3D_TexSetFilter(&sonicTextures[ 2], GPU_LINEAR, GPU_NEAREST);
+	C3D_TexSetFilter(&sonicTextures[ 3], GPU_LINEAR, GPU_NEAREST);
+	C3D_TexSetFilter(&sonicTextures[ 4], GPU_LINEAR, GPU_NEAREST);
+	C3D_TexSetFilter(&sonicTextures[ 5], GPU_LINEAR, GPU_NEAREST);
+	C3D_TexSetFilter(&sonicTextures[ 6], GPU_LINEAR, GPU_NEAREST);
+	C3D_TexSetFilter(&sonicTextures[ 7], GPU_LINEAR, GPU_NEAREST);
+	C3D_TexSetFilter(&sonicTextures[ 8], GPU_LINEAR, GPU_NEAREST);
+	C3D_TexSetFilter(&sonicTextures[ 9], GPU_LINEAR, GPU_NEAREST);
+	C3D_TexSetFilter(&sonicTextures[10], GPU_LINEAR, GPU_NEAREST);
+	C3D_TexSetFilter(&sonicTextures[11], GPU_LINEAR, GPU_NEAREST);
+	C3D_TexSetFilter(&sonicTextures[12], GPU_LINEAR, GPU_NEAREST);
+	C3D_TexSetFilter(&sonicTextures[13], GPU_LINEAR, GPU_NEAREST);
+	C3D_TexSetFilter(&sonicTextures[14], GPU_LINEAR, GPU_NEAREST);
+	C3D_TexSetFilter(&sonicTextures[15], GPU_LINEAR, GPU_NEAREST);
 
 	teapot1.loadVertices(sonicVertices, sonicVertexCount);
-	teapot1.setTextures(&eyeTexture, 1);
+	teapot1.setTextures(sonicTextures, 16, sonicTextureIDs);
 	teapot1.initialize(GetVector3(new float[]{0, 0, 0}), GetVector3(new float[]{0, 0, 0}), GetVector3(new float[]{0, 0, 0}));
 }
 
 void sceneRender(void) {
 	C3D_Mtx modelView;
 	Mtx_Identity(&modelView);
-	Mtx_Translate(&modelView, 0.0, 0.0, -2.0 + 0.5*sinf(angleX), true);
+	Mtx_Translate(&modelView, 0.0, 0.0, -5.0 + 0.5*sinf(angleX), true);
 	Mtx_RotateX(&modelView, angleX, true);
 	Mtx_RotateY(&modelView, angleY, true);
 
@@ -160,8 +209,8 @@ void sceneRender(void) {
 }
 
 void sceneExit() {
-	C3D_TexDelete(&kitten_tex);
-	C3D_TexDelete(&eyeTexture);
+	/*C3D_TexDelete(&kitten_tex);
+	C3D_TexDelete(&eyeTexture);*/
 
 	teapot1.free();
 	//linearFree(vbo1Data);

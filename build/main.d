@@ -100,9 +100,23 @@ main.o: C:/Users/Ben/Desktop/sonic_adventure_3ds/source/main.cpp \
  C:/devkitPro/libctru/include/c3d/framebuffer.h \
  C:/devkitPro/libctru/include/c3d/renderqueue.h \
  C:/devkitPro/libctru/include/tex3ds.h \
+ C:/Users/Ben/Desktop/sonic_adventure_3ds/build/mtx_kuchinaka0_t3x.h \
+ C:/Users/Ben/Desktop/sonic_adventure_3ds/build/mtx_kuchinaka1_t3x.h \
+ C:/Users/Ben/Desktop/sonic_adventure_3ds/build/s_anakage1_t3x.h \
+ C:/Users/Ben/Desktop/sonic_adventure_3ds/build/s_hando2_t3x.h \
+ C:/Users/Ben/Desktop/sonic_adventure_3ds/build/s_hando3_t3x.h \
+ C:/Users/Ben/Desktop/sonic_adventure_3ds/build/s_testhand_t3x.h \
+ C:/Users/Ben/Desktop/sonic_adventure_3ds/build/stx_btest1_t3x.h \
+ C:/Users/Ben/Desktop/sonic_adventure_3ds/build/stx_eye2_t3x.h \
+ C:/Users/Ben/Desktop/sonic_adventure_3ds/build/stx_ha_t3x.h \
+ C:/Users/Ben/Desktop/sonic_adventure_3ds/build/stx_hara_t3x.h \
+ C:/Users/Ben/Desktop/sonic_adventure_3ds/build/stx_hoho_t3x.h \
+ C:/Users/Ben/Desktop/sonic_adventure_3ds/build/stx_itemring_t3x.h \
+ C:/Users/Ben/Desktop/sonic_adventure_3ds/build/stx_itemshoos0_t3x.h \
+ C:/Users/Ben/Desktop/sonic_adventure_3ds/build/stx_kanagu_t3x.h \
+ C:/Users/Ben/Desktop/sonic_adventure_3ds/build/stx_newspin_t3x.h \
+ C:/Users/Ben/Desktop/sonic_adventure_3ds/build/ym_sjppse_t3x.h \
  C:/Users/Ben/Desktop/sonic_adventure_3ds/build/vshader_shbin.h \
- C:/Users/Ben/Desktop/sonic_adventure_3ds/build/kitten_t3x.h \
- C:/Users/Ben/Desktop/sonic_adventure_3ds/build/eye_t3x.h \
  C:/Users/Ben/Desktop/sonic_adventure_3ds/source/teapot.h \
  C:/Users/Ben/Desktop/sonic_adventure_3ds/source/graphics.h \
  C:/Users/Ben/Desktop/sonic_adventure_3ds/source/gameObject.h \
@@ -208,9 +222,23 @@ C:/devkitPro/libctru/include/c3d/fog.h:
 C:/devkitPro/libctru/include/c3d/framebuffer.h:
 C:/devkitPro/libctru/include/c3d/renderqueue.h:
 C:/devkitPro/libctru/include/tex3ds.h:
+C:/Users/Ben/Desktop/sonic_adventure_3ds/build/mtx_kuchinaka0_t3x.h:
+C:/Users/Ben/Desktop/sonic_adventure_3ds/build/mtx_kuchinaka1_t3x.h:
+C:/Users/Ben/Desktop/sonic_adventure_3ds/build/s_anakage1_t3x.h:
+C:/Users/Ben/Desktop/sonic_adventure_3ds/build/s_hando2_t3x.h:
+C:/Users/Ben/Desktop/sonic_adventure_3ds/build/s_hando3_t3x.h:
+C:/Users/Ben/Desktop/sonic_adventure_3ds/build/s_testhand_t3x.h:
+C:/Users/Ben/Desktop/sonic_adventure_3ds/build/stx_btest1_t3x.h:
+C:/Users/Ben/Desktop/sonic_adventure_3ds/build/stx_eye2_t3x.h:
+C:/Users/Ben/Desktop/sonic_adventure_3ds/build/stx_ha_t3x.h:
+C:/Users/Ben/Desktop/sonic_adventure_3ds/build/stx_hara_t3x.h:
+C:/Users/Ben/Desktop/sonic_adventure_3ds/build/stx_hoho_t3x.h:
+C:/Users/Ben/Desktop/sonic_adventure_3ds/build/stx_itemring_t3x.h:
+C:/Users/Ben/Desktop/sonic_adventure_3ds/build/stx_itemshoos0_t3x.h:
+C:/Users/Ben/Desktop/sonic_adventure_3ds/build/stx_kanagu_t3x.h:
+C:/Users/Ben/Desktop/sonic_adventure_3ds/build/stx_newspin_t3x.h:
+C:/Users/Ben/Desktop/sonic_adventure_3ds/build/ym_sjppse_t3x.h:
 C:/Users/Ben/Desktop/sonic_adventure_3ds/build/vshader_shbin.h:
-C:/Users/Ben/Desktop/sonic_adventure_3ds/build/kitten_t3x.h:
-C:/Users/Ben/Desktop/sonic_adventure_3ds/build/eye_t3x.h:
 C:/Users/Ben/Desktop/sonic_adventure_3ds/source/teapot.h:
 C:/Users/Ben/Desktop/sonic_adventure_3ds/source/graphics.h:
 C:/Users/Ben/Desktop/sonic_adventure_3ds/source/gameObject.h:
