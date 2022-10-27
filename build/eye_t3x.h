@@ -6,7 +6,7 @@
 extern const uint8_t eye_t3x[];
 extern const uint8_t eye_t3x_end[];
 #if __cplusplus >= 201103L
-static constexpr size_t eye_t3x_size=181;
+static constexpr size_t eye_t3x_size=349;
 #else
-static const size_t eye_t3x_size=181;
+static const size_t eye_t3x_size=349;
 #endif

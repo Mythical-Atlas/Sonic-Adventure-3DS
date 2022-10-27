@@ -105,7 +105,8 @@ main.o: C:/Users/Ben/Desktop/sonic_adventure_3ds/source/main.cpp \
  C:/Users/Ben/Desktop/sonic_adventure_3ds/build/eye_t3x.h \
  C:/Users/Ben/Desktop/sonic_adventure_3ds/source/teapot.h \
  C:/Users/Ben/Desktop/sonic_adventure_3ds/source/graphics.h \
- C:/Users/Ben/Desktop/sonic_adventure_3ds/source/gameObject.h
+ C:/Users/Ben/Desktop/sonic_adventure_3ds/source/gameObject.h \
+ C:/Users/Ben/Desktop/sonic_adventure_3ds/source/tiny_obj_loader.h
 C:/devkitPro/libctru/include/3ds.h:
 C:/devkitPro/libctru/include/3ds/types.h:
 C:/devkitPro/libctru/include/3ds/result.h:
@@ -213,3 +214,4 @@ C:/Users/Ben/Desktop/sonic_adventure_3ds/build/eye_t3x.h:
 C:/Users/Ben/Desktop/sonic_adventure_3ds/source/teapot.h:
 C:/Users/Ben/Desktop/sonic_adventure_3ds/source/graphics.h:
 C:/Users/Ben/Desktop/sonic_adventure_3ds/source/gameObject.h:
+C:/Users/Ben/Desktop/sonic_adventure_3ds/source/tiny_obj_loader.h:

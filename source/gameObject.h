@@ -57,9 +57,9 @@ class GameObject {
                 float normY = calculateNormalY(vert0, vert1, vert2);
                 float normZ = calculateNormalZ(vert0, vert1, vert2);
 
-                vertices[v * 3 + 0] = {{vert0[0], vert0[1], vert0[2]}, {modelVertices[v * 3 + 0].texcoord[0], modelVertices[v * 3 + 0].texcoord[1]}, {normX, normY, normZ}};
-                vertices[v * 3 + 1] = {{vert1[0], vert1[1], vert1[2]}, {modelVertices[v * 3 + 1].texcoord[0], modelVertices[v * 3 + 1].texcoord[1]}, {normX, normY, normZ}};
-                vertices[v * 3 + 2] = {{vert2[0], vert2[1], vert2[2]}, {modelVertices[v * 3 + 2].texcoord[0], modelVertices[v * 3 + 2].texcoord[1]}, {normX, normY, normZ}};
+                vertices[v * 3 + 0] = {{vert0[0], vert0[1], vert0[2]}, {modelVertices[v * 3 + 0].uv[0], modelVertices[v * 3 + 0].uv[1]}, {normX, normY, normZ}};
+                vertices[v * 3 + 1] = {{vert1[0], vert1[1], vert1[2]}, {modelVertices[v * 3 + 1].uv[0], modelVertices[v * 3 + 1].uv[1]}, {normX, normY, normZ}};
+                vertices[v * 3 + 2] = {{vert2[0], vert2[1], vert2[2]}, {modelVertices[v * 3 + 2].uv[0], modelVertices[v * 3 + 2].uv[1]}, {normX, normY, normZ}};
             }
         }
 
