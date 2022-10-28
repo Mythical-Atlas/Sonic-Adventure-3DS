@@ -40,7 +40,7 @@ class GameObject {
                 BufInfo_Add(&buffer, vboData, sizeof(Vertex), 3, 0x210);
                 vboAllocated = true;
 
-                vertices = (Vertex*)linearAlloc(sizeof(Vertex) * vertexCount);
+                vertices = new Vertex[vertexCount];
             }
 
             this->position = position;
@@ -68,8 +68,14 @@ class GameObject {
             C3D_SetBufInfo(&buffer);
             memcpy(vboData, vertices, sizeof(Vertex) * vertexCount);
 
+            int previousTex = -1;
+
             for(int i = 0; i < vertexCount; i += 3) {
-                C3D_TexBind(0, &textures[triTextureIDs[(int)(i / 3)]]);
+                if(triTextureIDs[(int)(i / 3)] != previousTex || previousTex == -1) {
+                    C3D_TexBind(0, &textures[triTextureIDs[(int)(i / 3)]]);
+                    previousTex = triTextureIDs[(int)(i / 3)];
+                }
+
                 C3D_DrawArrays(GPU_TRIANGLES, i, 3);
             }
         }
