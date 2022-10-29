@@ -33708,7 +33708,7 @@ LOAD c:/devkitpro/devkitarm/bin/../lib/gcc/arm-none-eabi/12.1.0/../../../../arm-
 END GROUP
 LOAD c:/devkitpro/devkitarm/bin/../lib/gcc/arm-none-eabi/12.1.0/armv6k/fpu/crtend.o
 LOAD c:/devkitpro/devkitarm/bin/../lib/gcc/arm-none-eabi/12.1.0/armv6k/fpu/crtn.o
-OUTPUT(C:/Users/Ben/Desktop/sonic_adventure_3ds/sonic_adventure_3ds.elf elf32-littlearm)
+OUTPUT(C:/Users/Ben/Desktop/sonic-adventure-3ds/sonic-adventure-3ds.elf elf32-littlearm)
 LOAD linker stubs
 
 .ARM.attributes

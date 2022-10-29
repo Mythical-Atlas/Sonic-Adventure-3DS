@@ -6,9 +6,9 @@
         {
             "label": "build and run",
             "type": "shell",
-            "command": "make\nStart-Process \"C:\\Citra\\nightly-mingw\\citra.exe\" sonic_adventure_3ds.3dsx",
+            "command": "make\nStart-Process \"C:\\Citra\\nightly-mingw\\citra.exe\" sonic-adventure-3ds.3dsx",
             "options": {
-                "cwd": "C:\\Users\\Ben\\Desktop\\sonic_adventure_3ds\\"
+                "cwd": "C:\\Users\\Ben\\Desktop\\sonic-adventure-3ds\\"
             },
             "problemMatcher": [],
             "group": {
@@ -24,7 +24,7 @@
             "type": "shell",
             "command": "make",
             "options": {
-                "cwd": "C:\\Users\\Ben\\Desktop\\sonic_adventure_3ds\\"
+                "cwd": "C:\\Users\\Ben\\Desktop\\sonic-adventure-3ds\\"
             },
             "problemMatcher": [],
             "group": {
