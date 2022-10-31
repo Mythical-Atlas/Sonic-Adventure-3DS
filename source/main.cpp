@@ -3,6 +3,8 @@
 #include <tex3ds.h>
 #include <string.h>
 
+#include "model.h"
+
 #include "mtx_kuchinaka0_t3x.h"
 #include "mtx_kuchinaka1_t3x.h"
 #include "s_anakage1_t3x.h"
@@ -21,14 +23,8 @@
 #include "ym_sjppse_t3x.h"
 
 #include "vshader_shbin.h"
-#include "teapot.h"
 #include "graphics.h"
 #include "gameObject.h"
-
-#define TINYOBJLOADER_IMPLEMENTATION
-#include "tiny_obj_loader.h"
-
-//using namespace std;
 
 float angleX = 0.0, angleY = 0.0;
 
@@ -38,74 +34,30 @@ int sonicMeshCount;
 GameObject* sonicMeshes;
 Vertex** sonicVertices;
 int* sonicVertexCounts;
-int** sonicTextureIDs;
-
-std::string inputfile = "romfs:/sonic.obj";
-std::string mtlDir = "romfs:/";
-tinyobj::attrib_t attrib;
-std::vector<tinyobj::shape_t> shapes;
-std::vector<tinyobj::material_t> materials;
-std::string warn;
-std::string err;
-
-/*tinyobj::ObjReaderConfig reader_config;
-tinyobj::ObjReader reader;*/
+int* sonicTextureIDs;
 
 void sceneInit() {
 	romfsInit();
 
-	tinyobj::LoadObj(&attrib, &shapes, &materials, &err, inputfile.c_str(), mtlDir.c_str(), true);
-
-	int meshIndex = 0;
-	sonicMeshCount = 28;
+	sonicMeshCount = meshCount;
 	sonicMeshes = (GameObject*)linearAlloc(sizeof(GameObject) * sonicMeshCount);
 	sonicVertices = new Vertex*[sonicMeshCount];
 	sonicVertexCounts = new int[sonicMeshCount];
-	sonicTextureIDs = new int*[sonicMeshCount];
+	sonicTextureIDs = new int[sonicMeshCount];
 
-	for (int s = 0; s < sonicMeshCount; s++) {
-		//if(shapes[s].name.at(0) == 'M') {
-			sonicVertexCounts[meshIndex] = shapes[s].mesh.num_face_vertices.size() * 3;
-			sonicVertices[meshIndex] = new Vertex[sonicVertexCounts[meshIndex]];
+	loadModelPointers();
+	for(int m = 0; m < sonicMeshCount; m++) {
+		sonicVertexCounts[m] = meshVertCounts[m];
+		sonicVertices[m] = new Vertex[sonicVertexCounts[m]];
+		for(int v = 0; v < sonicVertexCounts[m]; v++) {
+			sonicVertices[m][v] = {
+				{meshVertices[m][v * 8 + 0], meshVertices[m][v * 8 + 1], meshVertices[m][v * 8 + 2]},
+				{meshVertices[m][v * 8 + 3], meshVertices[m][v * 8 + 4]},
+				{meshVertices[m][v * 8 + 5], meshVertices[m][v * 8 + 6], meshVertices[m][v * 8 + 7]}
+			};
 
-			size_t index_offset = 0;
-			for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
-				size_t fv = size_t(shapes[s].mesh.num_face_vertices[f]);
-
-				for (size_t v = 0; v < fv; v++) {
-					tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
-
-					float vx = attrib.vertices[3*size_t(idx.vertex_index)+0];
-					float vy = attrib.vertices[3*size_t(idx.vertex_index)+1];
-					float vz = attrib.vertices[3*size_t(idx.vertex_index)+2];
-
-					float nx = 0;
-					float ny = 0;
-					float nz = 0;
-					float tx = 0;
-					float ty = 0;
-
-					if (idx.normal_index >= 0) {
-						nx = attrib.normals[3*size_t(idx.normal_index)+0];
-						ny = attrib.normals[3*size_t(idx.normal_index)+1];
-						nz = attrib.normals[3*size_t(idx.normal_index)+2];
-					}
-
-					if (idx.texcoord_index >= 0) {
-						tx = attrib.texcoords[2*size_t(idx.texcoord_index)+0];
-						ty = attrib.texcoords[2*size_t(idx.texcoord_index)+1];
-					}
-
-					sonicVertices[meshIndex][index_offset + v] = {{vx, vy, vz}, {tx, ty}, {nx, ny, nz}};
-				}
-				index_offset += fv;
-			}
-
-			sonicTextureIDs[meshIndex] = new int[shapes[s].mesh.material_ids.size()];
-			for(size_t f = 0; f < shapes[s].mesh.material_ids.size(); f++) {sonicTextureIDs[meshIndex][f] = shapes[s].mesh.material_ids[f];}
-
-			meshIndex++;
-		//}
+			sonicTextureIDs[m] = meshMaterialIDs[m];
+		}
 	}
 
 	initGraphics();
@@ -116,6 +68,19 @@ void sceneInit() {
 
 	loadTextureFromMem(&sonicTextures[ 0], stx_btest1_t3x, stx_btest1_t3x_size);
 	loadTextureFromMem(&sonicTextures[ 1], stx_hara_t3x, stx_hara_t3x_size);
+	loadTextureFromMem(&sonicTextures[ 2], stx_eye2_t3x, stx_eye2_t3x_size);
+	loadTextureFromMem(&sonicTextures[ 3], s_anakage1_t3x, s_anakage1_t3x_size);
+	loadTextureFromMem(&sonicTextures[ 4], stx_hoho_t3x, stx_hoho_t3x_size);
+	loadTextureFromMem(&sonicTextures[ 5], s_hando2_t3x, s_hando2_t3x_size);
+	loadTextureFromMem(&sonicTextures[ 6], s_anakage1_t3x, s_anakage1_t3x_size);
+	loadTextureFromMem(&sonicTextures[ 7], s_hando3_t3x, s_hando3_t3x_size);
+	loadTextureFromMem(&sonicTextures[ 8], s_testhand_t3x, s_testhand_t3x_size);
+	loadTextureFromMem(&sonicTextures[ 9], s_hando3_t3x, s_hando3_t3x_size);
+	loadTextureFromMem(&sonicTextures[10], ym_sjppse_t3x, ym_sjppse_t3x_size);
+	loadTextureFromMem(&sonicTextures[11], stx_kanagu_t3x, stx_kanagu_t3x_size);
+
+	/*loadTextureFromMem(&sonicTextures[ 0], stx_btest1_t3x, stx_btest1_t3x_size);
+	loadTextureFromMem(&sonicTextures[ 1], stx_hara_t3x, stx_hara_t3x_size);
 	loadTextureFromMem(&sonicTextures[ 2], ym_sjppse_t3x, ym_sjppse_t3x_size);
 	loadTextureFromMem(&sonicTextures[ 3], stx_kanagu_t3x, stx_kanagu_t3x_size);
 	loadTextureFromMem(&sonicTextures[ 4], stx_eye2_t3x, stx_eye2_t3x_size);
@@ -125,7 +90,7 @@ void sceneInit() {
 	loadTextureFromMem(&sonicTextures[ 8], s_anakage1_t3x, s_anakage1_t3x_size);
 	loadTextureFromMem(&sonicTextures[ 9], s_hando3_t3x, s_hando3_t3x_size); // dupe?
 	loadTextureFromMem(&sonicTextures[10], s_testhand_t3x, s_testhand_t3x_size);
-	loadTextureFromMem(&sonicTextures[11], s_hando3_t3x, s_hando3_t3x_size); // dupe?
+	loadTextureFromMem(&sonicTextures[11], s_hando3_t3x, s_hando3_t3x_size); // dupe?*/
 
 	// unused:
 	//loadTextureFromMem(&sonicTextures[12], mtx_kuchinaka0_t3x, mtx_kuchinaka0_t3x_size);
@@ -152,10 +117,11 @@ void sceneInit() {
 	C3D_TexSetFilter(&sonicTextures[14], GPU_LINEAR, GPU_NEAREST);
 	C3D_TexSetFilter(&sonicTextures[15], GPU_LINEAR, GPU_NEAREST);
 
-	printf("\x1b[0;0HsonicMeshCount: %i", sonicMeshCount);
+	printf("\x1b[1;1HsonicMeshCount: %i", sonicMeshCount);
+	printf("\x1b[2;1Hvert 0: %f", sonicVertices[0][0].position[0]);
 	for (int s = 0; s < sonicMeshCount; s++) {
 		sonicMeshes[s].loadVertices(sonicVertices[s], sonicVertexCounts[s]);
-		sonicMeshes[s].setTextures(sonicTextures, 16, sonicTextureIDs[s]);
+		sonicMeshes[s].setTextures(sonicTextures, sonicTextureIDs[s]);
 		sonicMeshes[s].initialize(GetVector3(new float[]{0, 0, 0}), GetVector3(new float[]{0, 0, 0}), GetVector3(new float[]{0, 0, 0}));
 	}
 }

@@ -1,1 +1,1 @@
-vshader.shbin.o: /home/Ben/Desktop/sonic-adventure-3ds/source/vshader.v.pica /home/Ben/Desktop/sonic-adventure-3ds/source/vshader.v.pica
+vshader.shbin.o: /home/Ben/Desktop/Sonic-Adventure-3DS/source/vshader.v.pica /home/Ben/Desktop/Sonic-Adventure-3DS/source/vshader.v.pica

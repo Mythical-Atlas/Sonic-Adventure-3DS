@@ -100,6 +100,7 @@ main.o: C:/Users/Ben/Desktop/sonic-adventure-3ds/source/main.cpp \
  C:/devkitPro/libctru/include/c3d/framebuffer.h \
  C:/devkitPro/libctru/include/c3d/renderqueue.h \
  C:/devkitPro/libctru/include/tex3ds.h \
+ C:/Users/Ben/Desktop/sonic-adventure-3ds/source/model.h \
  C:/Users/Ben/Desktop/sonic-adventure-3ds/build/mtx_kuchinaka0_t3x.h \
  C:/Users/Ben/Desktop/sonic-adventure-3ds/build/mtx_kuchinaka1_t3x.h \
  C:/Users/Ben/Desktop/sonic-adventure-3ds/build/s_anakage1_t3x.h \
@@ -117,10 +118,8 @@ main.o: C:/Users/Ben/Desktop/sonic-adventure-3ds/source/main.cpp \
  C:/Users/Ben/Desktop/sonic-adventure-3ds/build/stx_newspin_t3x.h \
  C:/Users/Ben/Desktop/sonic-adventure-3ds/build/ym_sjppse_t3x.h \
  C:/Users/Ben/Desktop/sonic-adventure-3ds/build/vshader_shbin.h \
- C:/Users/Ben/Desktop/sonic-adventure-3ds/source/teapot.h \
  C:/Users/Ben/Desktop/sonic-adventure-3ds/source/graphics.h \
- C:/Users/Ben/Desktop/sonic-adventure-3ds/source/gameObject.h \
- C:/Users/Ben/Desktop/sonic-adventure-3ds/source/tiny_obj_loader.h
+ C:/Users/Ben/Desktop/sonic-adventure-3ds/source/gameObject.h
 C:/devkitPro/libctru/include/3ds.h:
 C:/devkitPro/libctru/include/3ds/types.h:
 C:/devkitPro/libctru/include/3ds/result.h:
@@ -222,6 +221,7 @@ C:/devkitPro/libctru/include/c3d/fog.h:
 C:/devkitPro/libctru/include/c3d/framebuffer.h:
 C:/devkitPro/libctru/include/c3d/renderqueue.h:
 C:/devkitPro/libctru/include/tex3ds.h:
+C:/Users/Ben/Desktop/sonic-adventure-3ds/source/model.h:
 C:/Users/Ben/Desktop/sonic-adventure-3ds/build/mtx_kuchinaka0_t3x.h:
 C:/Users/Ben/Desktop/sonic-adventure-3ds/build/mtx_kuchinaka1_t3x.h:
 C:/Users/Ben/Desktop/sonic-adventure-3ds/build/s_anakage1_t3x.h:
@@ -239,7 +239,5 @@ C:/Users/Ben/Desktop/sonic-adventure-3ds/build/stx_kanagu_t3x.h:
 C:/Users/Ben/Desktop/sonic-adventure-3ds/build/stx_newspin_t3x.h:
 C:/Users/Ben/Desktop/sonic-adventure-3ds/build/ym_sjppse_t3x.h:
 C:/Users/Ben/Desktop/sonic-adventure-3ds/build/vshader_shbin.h:
-C:/Users/Ben/Desktop/sonic-adventure-3ds/source/teapot.h:
 C:/Users/Ben/Desktop/sonic-adventure-3ds/source/graphics.h:
 C:/Users/Ben/Desktop/sonic-adventure-3ds/source/gameObject.h:
-C:/Users/Ben/Desktop/sonic-adventure-3ds/source/tiny_obj_loader.h:
