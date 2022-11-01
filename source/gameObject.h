@@ -1,4 +1,8 @@
 #include "graphics.h"
+#include "node.h"
+#include "mesh.h"
+#include "anim.h"
+#include "animChannel.h"
 
 using namespace std;
 
@@ -7,72 +11,102 @@ using namespace std;
 
 class GameObject {
     public:
-        Vertex* modelVertices;
-        Vertex* vertices;
-        int vertexCount;
+        Node* nodes;
+        Mesh* meshes;
+        Anim* anims;
+        AnimChannel* channels;
         
         C3D_Tex* textures;
-        int textureID;
 
-        Vector3 position;
-        Vector3 rotation;
-        Vector3 scale;
+        Vec3 position;
+        Quat rotation;
+        Vec3 scale;
 
-        void* vboData;
-        C3D_BufInfo buffer;
-        bool vboAllocated;
+        void loadModel(
+            int nodeCount,
+            int* nodeNameLengths,
+            const char** nodeNames,
+            float** nodeTransformations,
+            int* nodeParentIndices,
+            int* nodeChildCounts,
+            int** nodeChildIndices,
+            int* nodeMeshCounts,
+            int** nodeMeshIndices,
+            int meshCount,
+            int* meshVertCounts,
+            float** meshVertices,
+            int* meshMaterialIDs,
+            int animationCount,
+            int* animationNameLengths,
+            const char** animationNames,
+            double* animationDurations,
+            double* animationTicksPerSeconds,
+            int* animationChannelCounts,
+            int** animationChannelIndices,
+            int animationChannelCount,
+            int* animationChannelNodeNameLengths,
+            const char** animationChannelNodeNames,
+            int* animationChannelPositionKeyCounts,
+            double** animationChannelPositionKeyTimes,
+            float** animationChannelPositionKeyValues,
+            int* animationChannelRotationKeyCounts,
+            double** animationChannelRotationKeyTimes,
+            float** animationChannelRotationKeyValues,
+            int* animationChannelScaleKeyCounts,
+            double** animationChannelScaleKeyTimes,
+            float** animationChannelScaleKeyValues
+        ) {
+            nodes = (Node*)linearAlloc(sizeof(Node) * nodeCount);
+            meshes = (Mesh*)linearAlloc(sizeof(Mesh) * meshCount);
+            anims = (Anim*)linearAlloc(sizeof(Anim) * animationCount);
+            channels = (AnimChannel*)linearAlloc(sizeof(AnimChannel) * animationChannelCount);
 
-        void loadVertices(Vertex* vertices, int vertexCount) {
-            modelVertices = vertices;
-            this->vertexCount = vertexCount;
-        }
-        void setTextures(C3D_Tex* textures, int textureID) {
-            this->textures = textures;
-            this->textureID = textureID;
-        }
-
-        void initialize(Vector3 position, Vector3 rotation, Vector3 scale) {
-            if(!vboAllocated) {
-                vboData = linearAlloc(sizeof(Vertex) * vertexCount);
-                BufInfo_Init(&buffer);
-                BufInfo_Add(&buffer, vboData, sizeof(Vertex), 3, 0x210);
-                vboAllocated = true;
-
-                vertices = new Vertex[vertexCount];
+            for(int i = 0; i < nodeCount; i++) {nodes[i].loadNode(
+                nodes,
+                nodeNameLengths[i],
+                nodeNames[i],
+                nodeTransformations[i],
+                nodeParentIndices[i],
+                nodeChildCounts[i],
+                nodeChildIndices[i],
+                nodeMeshCounts[i],
+                nodeMeshIndices[i]
+            );}
+            for(int i = 0; i < meshCount; i++) {
+                meshes[i].loadMesh(
+                    meshVertCounts[i],
+                    meshVertices[i],
+                    meshMaterialIDs[i]
+                );
+                meshes[i].initVBO();
             }
-
-            this->position = position;
-            this->rotation = rotation;
-            this->scale = scale;
+            for(int i = 0; i < animationCount; i++) {anims[i].loadAnim(
+                animationNameLengths[i],
+                animationNames[i],
+                animationDurations[i],
+                animationTicksPerSeconds[i],
+                animationChannelCounts[i],
+                animationChannelIndices[i]
+            );}
+            for(int i = 0; i < animationChannelCount; i++) {channels[i].loadAnimChannel(
+                animationChannelNodeNameLengths[i],
+                animationChannelNodeNames[i],
+                animationChannelPositionKeyCounts[i],
+                animationChannelPositionKeyTimes[i],
+                animationChannelPositionKeyValues[i],
+                animationChannelRotationKeyCounts[i],
+                animationChannelRotationKeyTimes[i],
+                animationChannelRotationKeyValues[i],
+                animationChannelScaleKeyCounts[i],
+                animationChannelScaleKeyTimes[i],
+                animationChannelScaleKeyValues[i]
+            );}
         }
-
-        void updateVertices() {
-            for(int v = 0; v < vertexCount / 3; v++) {
-                float vert0[3] = {modelVertices[v * 3 + 0].position[0], modelVertices[v * 3 + 0].position[1], modelVertices[v * 3 + 0].position[2]};
-                float vert1[3] = {modelVertices[v * 3 + 1].position[0], modelVertices[v * 3 + 1].position[1], modelVertices[v * 3 + 1].position[2]};
-                float vert2[3] = {modelVertices[v * 3 + 2].position[0], modelVertices[v * 3 + 2].position[1], modelVertices[v * 3 + 2].position[2]};
-
-                float normX = calculateNormalX(vert0, vert1, vert2);
-                float normY = calculateNormalY(vert0, vert1, vert2);
-                float normZ = calculateNormalZ(vert0, vert1, vert2);
-
-                vertices[v * 3 + 0] = {{vert0[0], vert0[1], vert0[2]}, {modelVertices[v * 3 + 0].uv[0], modelVertices[v * 3 + 0].uv[1]}, {normX, normY, normZ}};
-                vertices[v * 3 + 1] = {{vert1[0], vert1[1], vert1[2]}, {modelVertices[v * 3 + 1].uv[0], modelVertices[v * 3 + 1].uv[1]}, {normX, normY, normZ}};
-                vertices[v * 3 + 2] = {{vert2[0], vert2[1], vert2[2]}, {modelVertices[v * 3 + 2].uv[0], modelVertices[v * 3 + 2].uv[1]}, {normX, normY, normZ}};
-            }
-        }
+        void setTextures(C3D_Tex* textures) {this->textures = textures;}
 
         void draw() {
-            C3D_SetBufInfo(&buffer);
-            memcpy(vboData, vertices, sizeof(Vertex) * vertexCount);
-            C3D_TexBind(0, &textures[textureID]);
-            C3D_DrawArrays(GPU_TRIANGLES, 0, vertexCount);
-        }
-
-        void free() {
-            if(vboAllocated) {
-                linearFree(vboData);
-                vboAllocated = false;
+            for(int i = 0; i < nodeCount; i++) {
+                if(nodes[i].name[0] != 'M') {nodes[i].draw(textures, meshes, anims, channels);}
             }
         }
 };

@@ -27,38 +27,51 @@
 #include "gameObject.h"
 
 float angleX = 0.0, angleY = 0.0;
+float zoom = -500;
 
 C3D_Tex* sonicTextures;
 
-int sonicMeshCount;
-GameObject* sonicMeshes;
-Vertex** sonicVertices;
-int* sonicVertexCounts;
-int* sonicTextureIDs;
+GameObject sonicModel;
 
 void sceneInit() {
 	romfsInit();
 
-	sonicMeshCount = meshCount;
-	sonicMeshes = (GameObject*)linearAlloc(sizeof(GameObject) * sonicMeshCount);
-	sonicVertices = new Vertex*[sonicMeshCount];
-	sonicVertexCounts = new int[sonicMeshCount];
-	sonicTextureIDs = new int[sonicMeshCount];
-
 	loadModelPointers();
-	for(int m = 0; m < sonicMeshCount; m++) {
-		sonicVertexCounts[m] = meshVertCounts[m];
-		sonicVertices[m] = new Vertex[sonicVertexCounts[m]];
-		for(int v = 0; v < sonicVertexCounts[m]; v++) {
-			sonicVertices[m][v] = {
-				{meshVertices[m][v * 8 + 0], meshVertices[m][v * 8 + 1], meshVertices[m][v * 8 + 2]},
-				{meshVertices[m][v * 8 + 3], meshVertices[m][v * 8 + 4]},
-				{meshVertices[m][v * 8 + 5], meshVertices[m][v * 8 + 6], meshVertices[m][v * 8 + 7]}
-			};
 
-			sonicTextureIDs[m] = meshMaterialIDs[m];
-		}
-	}
+	sonicModel.loadModel(
+		nodeCount,
+		nodeNameLengths,
+		nodeNames,
+		nodeTransformations,
+		nodeParentIndices,
+		nodeChildCounts,
+		nodeChildIndices,
+		nodeMeshCounts,
+		nodeMeshIndices,
+		meshCount,
+		meshVertCounts,
+		meshVertices,
+		meshMaterialIDs,
+		animationCount,
+		animationNameLengths,
+		animationNames,
+		animationDurations,
+		animationTicksPerSeconds,
+		animationChannelCounts,
+		animationChannelIndices,
+		animationChannelCount,
+		animationChannelNodeNameLengths,
+		animationChannelNodeNames,
+		animationChannelPositionKeyCounts,
+		animationChannelPositionKeyTimes,
+		animationChannelPositionKeyValues,
+		animationChannelRotationKeyCounts,
+		animationChannelRotationKeyTimes,
+		animationChannelRotationKeyValues,
+		animationChannelScaleKeyCounts,
+		animationChannelScaleKeyTimes,
+		animationChannelScaleKeyValues
+	);
 
 	initGraphics();
 
@@ -117,28 +130,32 @@ void sceneInit() {
 	C3D_TexSetFilter(&sonicTextures[14], GPU_LINEAR, GPU_NEAREST);
 	C3D_TexSetFilter(&sonicTextures[15], GPU_LINEAR, GPU_NEAREST);
 
-	printf("\x1b[1;1HsonicMeshCount: %i", sonicMeshCount);
-	printf("\x1b[2;1Hvert 0: %f", sonicVertices[0][0].position[0]);
-	for (int s = 0; s < sonicMeshCount; s++) {
+	//printf("\x1b[1;1HsonicMeshCount: %i", sonicMeshCount);
+	//printf("\x1b[2;1Hvert 0: %f", sonicVertices[0][0].position[0]);
+	/*for (int s = 0; s < sonicMeshCount; s++) {
 		sonicMeshes[s].loadVertices(sonicVertices[s], sonicVertexCounts[s]);
 		sonicMeshes[s].setTextures(sonicTextures, sonicTextureIDs[s]);
 		sonicMeshes[s].initialize(GetVector3(new float[]{0, 0, 0}), GetVector3(new float[]{0, 0, 0}), GetVector3(new float[]{0, 0, 0}));
-	}
+	}*/
+
+	sonicModel.setTextures(sonicTextures);
 }
 
 void sceneRender(void) {
 	C3D_Mtx modelView;
 	Mtx_Identity(&modelView);
-	Mtx_Translate(&modelView, 0.0, 0.0, -5.0 + 0.5*sinf(angleX), true);
+	Mtx_Translate(&modelView, 0.0, 0.0, zoom + 0.5*sinf(angleX), true);
 	Mtx_RotateX(&modelView, angleX, true);
 	Mtx_RotateY(&modelView, angleY, true);
 
     updateUniforms(&modelView);
 
-	for(int s = 0; s < sonicMeshCount; s++) {
+	/*for(int s = 0; s < sonicMeshCount; s++) {
 		sonicMeshes[s].updateVertices();
 		sonicMeshes[s].draw();
-	}
+	}*/
+
+	sonicModel.draw();
 }
 
 void sceneExit() {
@@ -174,10 +191,12 @@ int main() {
 		if (kDown & KEY_START)
 			break; // break in order to return to hbmenu
 
-		if(hidKeysHeld() & KEY_LEFT) {angleY -= M_PI / 180;}
-		if(hidKeysHeld() & KEY_RIGHT) {angleY += M_PI / 180;}
-		if(hidKeysHeld() & KEY_UP) {angleX -= M_PI / 180;}
-		if(hidKeysHeld() & KEY_DOWN) {angleX += M_PI / 180;}
+		if(hidKeysHeld() & KEY_LEFT) {angleY -= M_PI / 90;}
+		if(hidKeysHeld() & KEY_RIGHT) {angleY += M_PI / 90;}
+		if(hidKeysHeld() & KEY_UP) {angleX -= M_PI / 90;}
+		if(hidKeysHeld() & KEY_DOWN) {angleX += M_PI / 90;}
+		if(hidKeysHeld() & KEY_A) {zoom += 5;}
+		if(hidKeysHeld() & KEY_B) {zoom -= 5;}
 
 	//angleY += M_PI / 360;}
 

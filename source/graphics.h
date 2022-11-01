@@ -32,15 +32,66 @@ typedef struct {
 typedef struct {
     float x;
     float y;
+} Vec2;
+typedef struct {
+    float x;
+    float y;
     float z;
-} Vector3;
+} Vec3;
+typedef struct {
+	float w;
+    float x;
+    float y;
+    float z;
+} Quat;
+typedef struct {
+    float a1; float a2; float a3; float a4;
+	float b1; float b2; float b3; float b4;
+	float c1; float c2; float c3; float c4;
+	float d1; float d2; float d3; float d4;
+} Mat4;
 
-Vector3 GetVector3(float input[3]) {
-    Vector3 output;
+Vec3 GetVector3(float input[3]) {
+    Vec3 output;
     output.x = input[0];
     output.y = input[1];
     output.z = input[2];
     return output;
+}
+
+Vec3 applyMat4ToVec3(Vec3 v, Mat4 m) {
+	Vec3 out;
+
+	out.x = m.a1 * v.x + m.a2 * v.y + m.a3 * v.z + m.a4;
+	out.y = m.b1 * v.x + m.b2 * v.y + m.b3 * v.z + m.b4;
+	out.z = m.c1 * v.x + m.c2 * v.y + m.c3 * v.z + m.c4;
+	
+	return out;
+}
+Mat4 applyMat4ToMat4(Mat4 a, Mat4 b) {
+	Mat4 out;
+
+	out.a1 = a.a1 * b.a1 + a.a2 * b.b1 + a.a3 * b.c1 + a.a4 * b.d1;
+	out.a2 = a.a1 * b.a2 + a.a2 * b.b2 + a.a3 * b.c2 + a.a4 * b.d2;
+	out.a3 = a.a1 * b.a3 + a.a2 * b.b3 + a.a3 * b.c3 + a.a4 * b.d3;
+	out.a4 = a.a1 * b.a4 + a.a2 * b.b4 + a.a3 * b.c4 + a.a4 * b.d4;
+
+	out.b1 = a.b1 * b.a1 + a.b2 * b.b1 + a.b3 * b.c1 + a.b4 * b.d1;
+	out.b2 = a.b1 * b.a2 + a.b2 * b.b2 + a.b3 * b.c2 + a.b4 * b.d2;
+	out.b3 = a.b1 * b.a3 + a.b2 * b.b3 + a.b3 * b.c3 + a.b4 * b.d3;
+	out.b4 = a.b1 * b.a4 + a.b2 * b.b4 + a.b3 * b.c4 + a.b4 * b.d4;
+
+	out.c1 = a.c1 * b.a1 + a.c2 * b.b1 + a.c3 * b.c1 + a.c4 * b.d1;
+	out.c2 = a.c1 * b.a2 + a.c2 * b.b2 + a.c3 * b.c2 + a.c4 * b.d2;
+	out.c3 = a.c1 * b.a3 + a.c2 * b.b3 + a.c3 * b.c3 + a.c4 * b.d3;
+	out.c4 = a.c1 * b.a4 + a.c2 * b.b4 + a.c3 * b.c4 + a.c4 * b.d4;
+
+	out.d1 = a.d1 * b.a1 + a.d2 * b.b1 + a.d3 * b.c1 + a.d4 * b.d1;
+	out.d2 = a.d1 * b.a2 + a.d2 * b.b2 + a.d3 * b.c2 + a.d4 * b.d2;
+	out.d3 = a.d1 * b.a3 + a.d2 * b.b3 + a.d3 * b.c3 + a.d4 * b.d3;
+	out.d4 = a.d1 * b.a4 + a.d2 * b.b4 + a.d3 * b.c4 + a.d4 * b.d4;
+
+	return out;
 }
 
 DVLB_s* vshader_dvlb;
