@@ -106,7 +106,7 @@ class GameObject {
 
         void draw() {
             for(int i = 0; i < nodeCount; i++) {
-                if(nodes[i].name[0] != 'M') {nodes[i].draw(textures, meshes, anims, channels);}
+                if(nodes[i].name[0] != 'M') {nodes[i].draw(nodes, textures, meshes, animationCount, anims, channels);}
             }
         }
 };

@@ -60,9 +60,9 @@ public:
 
     void updateVertData(Mat4 transformation) {
          for(int v = 0; v < vertCount / 3; v++) {
-            Vec3 vert0Temp = applyMat4ToVec3(vertices[v * 3 + 0], transformation);
-            Vec3 vert1Temp = applyMat4ToVec3(vertices[v * 3 + 1], transformation);
-            Vec3 vert2Temp = applyMat4ToVec3(vertices[v * 3 + 2], transformation);
+            Vec3 vert0Temp = multiplyMat4Vec3(transformation, vertices[v * 3 + 0]);
+            Vec3 vert1Temp = multiplyMat4Vec3(transformation, vertices[v * 3 + 1]);
+            Vec3 vert2Temp = multiplyMat4Vec3(transformation, vertices[v * 3 + 2]);
 
             float vert0[3] = {vert0Temp.x, vert0Temp.y, vert0Temp.z};
             float vert1[3] = {vert1Temp.x, vert1Temp.y, vert1Temp.z};

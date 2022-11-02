@@ -59,7 +59,7 @@ Vec3 GetVector3(float input[3]) {
     return output;
 }
 
-Vec3 applyMat4ToVec3(Vec3 v, Mat4 m) {
+Vec3 multiplyMat4Vec3(Mat4 m, Vec3 v) {
 	Vec3 out;
 
 	out.x = m.a1 * v.x + m.a2 * v.y + m.a3 * v.z + m.a4;
@@ -68,7 +68,7 @@ Vec3 applyMat4ToVec3(Vec3 v, Mat4 m) {
 	
 	return out;
 }
-Mat4 applyMat4ToMat4(Mat4 a, Mat4 b) {
+Mat4 multiplyMat4s(Mat4 a, Mat4 b) {
 	Mat4 out;
 
 	out.a1 = a.a1 * b.a1 + a.a2 * b.b1 + a.a3 * b.c1 + a.a4 * b.d1;
@@ -92,6 +92,87 @@ Mat4 applyMat4ToMat4(Mat4 a, Mat4 b) {
 	out.d4 = a.d1 * b.a4 + a.d2 * b.b4 + a.d3 * b.c4 + a.d4 * b.d4;
 
 	return out;
+}
+Mat4 getQuatMat4(Quat q) {
+	Mat4 out;
+
+	out.a1 = 1 - 2 * q.y * q.y - 2 * q.z * q.z;
+	out.a2 = 2 * q.x * q.y - 2 * q.w * q.z;
+	out.a3 = 2 * q.x * q.z + 2 * q.w * q.y;
+	out.a4 = 0;
+
+	out.b1 = 2 * q.x * q.y + 2 * q.w * q.z;
+	out.b2 = 1 - 2 * q.x * q.x - 2 * q.z * q.z;
+	out.b3 = 2 * q.y * q.z - 2 * q.w * q.x;
+	out.b4 = 0;
+
+	out.c1 = 2 * q.x * q.z - 2 * q.w * q.y;
+	out.c2 = 2 * q.y * q.z + 2 * q.w * q.x;
+	out.c3 = 1 - 2 * q.x * q.x - 2 * q.y * q.y;
+	out.c4 = 0;
+
+	out.d1 = 0;
+	out.d2 = 0;
+	out.d3 = 0;
+	out.d4 = 1;
+	
+	return out;
+}
+Mat4 getTranslationScaleMat4(Vec3 translation, Vec3 scale) {
+	Mat4 out;
+
+	out.a1 = scale.x;
+	out.a2 = 0;
+	out.a3 = 0;
+	out.a4 = translation.x;
+
+	out.b1 = 0;
+	out.b2 = scale.y;
+	out.b3 = 0;
+	out.b4 = translation.y;
+
+	out.c1 = 0;
+	out.c2 = 0;
+	out.c3 = scale.z;
+	out.c4 = translation.z;
+
+	out.d1 = 0;
+	out.d2 = 0;
+	out.d3 = 0;
+	out.d4 = 1;
+	
+	return out;
+}
+Mat4 getIdentityMat4() {
+	Mat4 out;
+
+	out.a1 = 1;
+	out.a2 = 0;
+	out.a3 = 0;
+	out.a4 = 0;
+
+	out.b1 = 0;
+	out.b2 = 1;
+	out.b3 = 0;
+	out.b4 = 0;
+
+	out.c1 = 0;
+	out.c2 = 0;
+	out.c3 = 1;
+	out.c4 = 0;
+
+	out.d1 = 0;
+	out.d2 = 0;
+	out.d3 = 0;
+	out.d4 = 1;
+	
+	return out;
+}
+
+bool compareStrings(int aLen, const char* a, int bLen, const char* b) {
+	if(aLen != bLen) {return 0;}
+	for(int i = 0; i < aLen; i++) {if(a[i] != b[i]) {return 0;}}
+	return 1;
 }
 
 DVLB_s* vshader_dvlb;

@@ -75,7 +75,7 @@ void sceneInit() {
 
 	initGraphics();
 
-	Mtx_PerspTilt(&projection, C3D_AngleFromDegrees(80.0f), C3D_AspectRatioTop, 0.01f, 1000.0f, false);
+	Mtx_PerspTilt(&projection, C3D_AngleFromDegrees(80.0f), C3D_AspectRatioTop, 0.01f, 100000.0f, false);
 
 	sonicTextures = new C3D_Tex[16];
 

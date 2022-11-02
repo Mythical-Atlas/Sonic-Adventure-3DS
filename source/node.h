@@ -1,3 +1,6 @@
+#include <string.h>
+#include <math.h>
+
 #include "graphics.h"
 #include "mesh.h"
 #include "anim.h"
@@ -12,14 +15,22 @@ public:
 	const char* name;
 
 	Mat4 transformation;
-    Mat4 recTran;
 	int parentIndex;
+
+    Mat4 tran;
+    Mat4 tranNoAnim;
+    // each frame, recAnimTran is updated going down the hierarchy
+    // it represents, essentially, the pivot point for the next node's transforms
 
 	int childCount;
 	int* childIndices;
 
 	int meshCount;
 	int* meshIndices;
+
+    int frame = 0;
+    int lastKnownGoodFrame = 0;
+    int timer = 0;
 
 	void loadNode(
         Node* prevNodes,
@@ -57,22 +68,54 @@ public:
 		this->transformation.d3 = transformation[14];
 		this->transformation.d4 = transformation[15];
 
-        if(parentIndex == -1) {recTran = this->transformation;}
-        else {recTran = applyMat4ToMat4(prevNodes[parentIndex].recTran, this->transformation);}
+        /*if(parentIndex == -1) {tran = this->transformation;}
+        else {tran = multiplyMat4s(prevNodes[parentIndex].tran, this->transformation);}*/
     }
 
-    //Vec3 applyParentTransformToVert(Vec3 vert, Mat4 transformation) {}
+    void draw(Node* prevNodes, C3D_Tex* textures, Mesh* meshes, int animCount, Anim* anims, AnimChannel* channels) {
+        if(parentIndex == -1) {tran = getIdentityMat4();} // does it matter if this is transformation or identity?
+        else if(parentIndex == 0) {tran = this->transformation;} // unsure if model specific, but likely universal
+        else {tran = prevNodes[parentIndex].tran;}
 
-    //Vec3 applyAnimationToVert(Vec3 vert, )
+        if(parentIndex == -1) {tranNoAnim = this->transformation;}
+        else {tranNoAnim = multiplyMat4s(prevNodes[parentIndex].tranNoAnim, this->transformation);}
 
-    void draw(C3D_Tex* textures, Mesh* meshes, Anim* anims, AnimChannel* channels) {
-        for(int i = 0; i < meshCount; i++) {
-            meshes[meshIndices[i]].updateVertData(recTran);
-            meshes[meshIndices[i]].draw(textures);
+        Mat4 animTran = getIdentityMat4();
+
+        int a = 1;
+        for(int c = 0; c < anims[a].channelCount; c++) {
+            if(compareStrings(nameLength, name, channels[anims[a].channelIndices[c]].nodeNameLength, channels[anims[a].channelIndices[c]].nodeName)) {
+                if(frame == 0) {lastKnownGoodFrame = 0;}
+                else {
+                    for(int f = 0; f < channels[anims[a].channelIndices[c]].rotationKeyCount; f++) {
+                        if(frame == channels[anims[a].channelIndices[c]].rotationKeyTimes[f]) {
+                            lastKnownGoodFrame = f;
+                            break;
+                        }
+                    }
+                }
+
+                animTran = multiplyMat4s(animTran, getTranslationScaleMat4(channels[anims[a].channelIndices[c]].positionKeyValues[lastKnownGoodFrame], channels[anims[a].channelIndices[c]].scaleKeyValues[lastKnownGoodFrame]));
+                animTran = multiplyMat4s(animTran, getQuatMat4(channels[anims[a].channelIndices[c]].rotationKeyValues[lastKnownGoodFrame]));
+                
+                break;
+            }
         }
 
-        // apply anims
-        // draw meshes
+        tran = multiplyMat4s(tran, animTran);
+
+        timer++;
+        if(timer == 4) {
+            timer = 0;
+            frame++;
+            if(frame == 32) {frame = 0;}
+        }
+
+        for(int i = 0; i < meshCount; i++) {
+            if(hidKeysHeld() & KEY_X) {meshes[meshIndices[i]].updateVertData(tranNoAnim);}
+            else {meshes[meshIndices[i]].updateVertData(tran);}
+            meshes[meshIndices[i]].draw(textures);
+        }
     }
 };
 
