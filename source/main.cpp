@@ -21,17 +21,21 @@
 #include "stx_kanagu_t3x.h"
 #include "stx_newspin_t3x.h"
 #include "ym_sjppse_t3x.h"
+#include "testGround_t3x.h"
 
 #include "vshader_shbin.h"
 #include "graphics.h"
 #include "gameObject.h"
+#include "plane.h"
 
-float angleX = 0.0, angleY = 0.0;
-float zoom = -500;
+Vec3 playerPos;
+Vec3 playerRot;
 
 C3D_Tex* sonicTextures;
+C3D_Tex groundTexture;
 
 GameObject sonicObject;
+Plane groundObj;
 
 void sceneInit() {
 	romfsInit();
@@ -48,9 +52,11 @@ void sceneInit() {
 	sonicModel.loadModel(modelData, modelSize);
 	sonicObject.loadModel(sonicModel);
 
+	groundObj.init(getTranslationScaleMat4(getVec3(0, -535, 0), getVec3(10000, 1, 10000)));
+
 	initGraphics();
 
-	Mtx_PerspTilt(&projection, C3D_AngleFromDegrees(80.0f), C3D_AspectRatioTop, 0.01f, 100000.0f, false);
+	Mtx_PerspTilt(&projection, C3D_AngleFromDegrees(70.0f), C3D_AspectRatioTop, 0.01f, 100000.0f, false);
 
 	sonicTextures = new C3D_Tex[16];
 
@@ -66,6 +72,8 @@ void sceneInit() {
 	loadTextureFromMem(&sonicTextures[ 9], s_hando3_t3x, s_hando3_t3x_size);
 	loadTextureFromMem(&sonicTextures[10], ym_sjppse_t3x, ym_sjppse_t3x_size);
 	loadTextureFromMem(&sonicTextures[11], stx_kanagu_t3x, stx_kanagu_t3x_size);
+
+	loadTextureFromMem(&groundTexture, testGround_t3x, testGround_t3x_size);
 
 	/*loadTextureFromMem(&sonicTextures[ 0], stx_btest1_t3x, stx_btest1_t3x_size);
 	loadTextureFromMem(&sonicTextures[ 1], stx_hara_t3x, stx_hara_t3x_size);
@@ -105,6 +113,8 @@ void sceneInit() {
 	C3D_TexSetFilter(&sonicTextures[14], GPU_LINEAR, GPU_NEAREST);
 	C3D_TexSetFilter(&sonicTextures[15], GPU_LINEAR, GPU_NEAREST);
 
+	C3D_TexSetFilter(&groundTexture, GPU_LINEAR, GPU_NEAREST);
+
 	//printf("\x1b[1;1HsonicMeshCount: %i", sonicMeshCount);
 	//printf("\x1b[2;1Hvert 0: %f", sonicVertices[0][0].position[0]);
 	/*for (int s = 0; s < sonicMeshCount; s++) {
@@ -115,14 +125,19 @@ void sceneInit() {
 
 	sonicObject.setTextures(sonicTextures);
 	sonicObject.setAnimation(-1);
+
+	groundObj.setTexture(&groundTexture);
 }
 
 void sceneRender(void) {
 	C3D_Mtx modelView;
 	Mtx_Identity(&modelView);
-	Mtx_Translate(&modelView, 0.0, 0.0, zoom + 0.5*sinf(angleX), true);
-	Mtx_RotateX(&modelView, angleX, true);
-	Mtx_RotateY(&modelView, angleY, true);
+
+	Mtx_RotateX(&modelView, M_PI / 8, true);
+	Mtx_RotateY(&modelView, -M_PI / 2, true);
+
+	Mtx_Translate(&modelView, -2000, -1000, 0, true);
+	Mtx_Translate(&modelView, playerPos.x, playerPos.y, playerPos.z, true);
 
     updateUniforms(&modelView);
 
@@ -130,6 +145,8 @@ void sceneRender(void) {
 		sonicMeshes[s].updateVertices();
 		sonicMeshes[s].draw();
 	}*/
+
+	groundObj.draw();
 
 	sonicObject.updateAnimation();
 	sonicObject.draw();
@@ -169,15 +186,39 @@ int main() {
 		if (kDown & KEY_START)
 			break; // break in order to return to hbmenu
 
-		if(hidKeysHeld() & KEY_LEFT) {angleY -= M_PI / 90;}
+		/*if(hidKeysHeld() & KEY_LEFT) {playerPos.z -= 50;}
+		if(hidKeysHeld() & KEY_RIGHT) {playerPos.z += 50;}
+		if(hidKeysHeld() & KEY_UP) {playerPos.x += 50;}
+		if(hidKeysHeld() & KEY_DOWN) {playerPos.x -= 50;}*/
+
+		circlePosition leftStickPos;
+		hidCircleRead(&leftStickPos);
+
+		playerPos.z += leftStickPos.dx / 2.0;
+		playerPos.x += leftStickPos.dy / 2.0;
+
+		if(hidKeysHeld() & KEY_LEFT || hidKeysHeld() & KEY_RIGHT || hidKeysHeld() & KEY_UP || hidKeysHeld() & KEY_DOWN) {
+			playerRot.y = atanf(leftStickPos.dy / leftStickPos.dx) - M_PI / 2.0;
+			if(leftStickPos.dx < 0) {playerRot.y += M_PI;}
+
+			sonicObject.currentAnimation = 4;
+		}
+		else {sonicObject.currentAnimation = -1;}
+
+		/*if(hidKeysHeld() & KEY_LEFT) {angleY -= M_PI / 90;}
 		if(hidKeysHeld() & KEY_RIGHT) {angleY += M_PI / 90;}
 		if(hidKeysHeld() & KEY_UP) {angleX -= M_PI / 90;}
 		if(hidKeysHeld() & KEY_DOWN) {angleX += M_PI / 90;}
 		if(hidKeysHeld() & KEY_A) {zoom += 5;}
-		if(hidKeysHeld() & KEY_B) {zoom -= 5;}
+		if(hidKeysHeld() & KEY_B) {zoom -= 5;}*/
 
 		if(hidKeysDown() & KEY_L) {sonicObject.setAnimation(sonicObject.currentAnimation - 1);}
 		if(hidKeysDown() & KEY_R) {sonicObject.setAnimation(sonicObject.currentAnimation + 1);}
+
+		sonicObject.position.x = -playerPos.x;
+		sonicObject.position.z = -playerPos.z;
+
+		sonicObject.rotation.y = playerRot.y;
 
 	//angleY += M_PI / 360;}
 

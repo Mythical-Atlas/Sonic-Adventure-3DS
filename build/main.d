@@ -123,7 +123,9 @@ main.o: C:/Users/Ben/Desktop/sonic-adventure-3ds/source/main.cpp \
  C:/Users/Ben/Desktop/sonic-adventure-3ds/build/stx_kanagu_t3x.h \
  C:/Users/Ben/Desktop/sonic-adventure-3ds/build/stx_newspin_t3x.h \
  C:/Users/Ben/Desktop/sonic-adventure-3ds/build/ym_sjppse_t3x.h \
- C:/Users/Ben/Desktop/sonic-adventure-3ds/source/gameObject.h
+ C:/Users/Ben/Desktop/sonic-adventure-3ds/build/testGround_t3x.h \
+ C:/Users/Ben/Desktop/sonic-adventure-3ds/source/gameObject.h \
+ C:/Users/Ben/Desktop/sonic-adventure-3ds/source/plane.h
 C:/devkitPro/libctru/include/3ds.h:
 C:/devkitPro/libctru/include/3ds/types.h:
 C:/devkitPro/libctru/include/3ds/result.h:
@@ -248,4 +250,6 @@ C:/Users/Ben/Desktop/sonic-adventure-3ds/build/stx_itemshoos0_t3x.h:
 C:/Users/Ben/Desktop/sonic-adventure-3ds/build/stx_kanagu_t3x.h:
 C:/Users/Ben/Desktop/sonic-adventure-3ds/build/stx_newspin_t3x.h:
 C:/Users/Ben/Desktop/sonic-adventure-3ds/build/ym_sjppse_t3x.h:
+C:/Users/Ben/Desktop/sonic-adventure-3ds/build/testGround_t3x.h:
 C:/Users/Ben/Desktop/sonic-adventure-3ds/source/gameObject.h:
+C:/Users/Ben/Desktop/sonic-adventure-3ds/source/plane.h:

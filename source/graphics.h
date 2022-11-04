@@ -51,11 +51,19 @@ typedef struct {
 	float d1; float d2; float d3; float d4;
 } Mat4;
 
-Vec3 GetVector3(float input[3]) {
+Vec3 getVector3(float input[3]) {
     Vec3 output;
     output.x = input[0];
     output.y = input[1];
     output.z = input[2];
+    return output;
+}
+
+Vec3 getVec3(float x, float y, float z) {
+    Vec3 output;
+    output.x = x;
+    output.y = y;
+    output.z = z;
     return output;
 }
 
@@ -159,6 +167,31 @@ Mat4 getIdentityMat4() {
 	out.c1 = 0;
 	out.c2 = 0;
 	out.c3 = 1;
+	out.c4 = 0;
+
+	out.d1 = 0;
+	out.d2 = 0;
+	out.d3 = 0;
+	out.d4 = 1;
+	
+	return out;
+}
+Mat4 getAngleRotationMat4(Vec3 r) {
+	Mat4 out;
+
+	out.a1 = cosf(r.y) * cosf(r.z);
+	out.a2 = sinf(r.x) * sinf(r.y) * cosf(r.z) - cosf(r.x) * sinf(r.z);
+	out.a3 = cosf(r.x) * sinf(r.y) * cosf(r.z) + sinf(r.x) * sinf(r.z);
+	out.a4 = 0;
+
+	out.b1 = cosf(r.y) * sinf(r.z);
+	out.b2 = sinf(r.x) * sinf(r.y) * sinf(r.z) + cosf(r.x) * cosf(r.z);
+	out.b3 = cosf(r.x) * sinf(r.y) * sinf(r.z) - sinf(r.x) * cosf(r.z);
+	out.b4 = 0;
+
+	out.c1 = -sinf(r.y);
+	out.c2 = sinf(r.x) * cosf(r.y);
+	out.c3 = cosf(r.x) * cosf(r.y);
 	out.c4 = 0;
 
 	out.d1 = 0;

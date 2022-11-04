@@ -67,10 +67,9 @@ public:
 		this->transformation.d4 = transformation.d4;
     }
 
-    void draw(Node* prevNodes, C3D_Tex* textures, Mesh* meshes, Anim* anims, AnimChannel* channels, int animIndex, int frame) {
+    void draw(Mat4 objTran, Node* prevNodes, C3D_Tex* textures, Mesh* meshes, Anim* anims, AnimChannel* channels, int animIndex, int frame) {
         if(animIndex != -1) {
-            if(parentIndex == -1) {tran = getIdentityMat4();} // does it matter if this is transformation or identity?
-            else if(parentIndex == 0) {tran = this->transformation;} // unsure if model specific, but likely universal
+            if(parentIndex == -1 || parentIndex <= 0) {tran = this->transformation;}
             else {tran = prevNodes[parentIndex].tran;}
 
             Mat4 animTran = getIdentityMat4();
@@ -118,7 +117,7 @@ public:
         }*/
 
         for(int i = 0; i < meshCount; i++) {
-            meshes[meshIndices[i]].updateVertData(tran);
+            meshes[meshIndices[i]].updateVertData(multiplyMat4s(objTran, tran));
             meshes[meshIndices[i]].draw(textures);
         }
     }

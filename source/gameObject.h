@@ -24,7 +24,7 @@ class GameObject {
         C3D_Tex* textures;
 
         Vec3 position;
-        Quat rotation;
+        Vec3 rotation;
         Vec3 scale;
 
         int currentAnimation;
@@ -85,6 +85,10 @@ class GameObject {
             );}
 
             currentAnimation = -1;
+
+            scale.x = 1;
+            scale.y = 1;
+            scale.z = 1;
         }
         void setTextures(C3D_Tex* textures) {this->textures = textures;}
 
@@ -100,7 +104,14 @@ class GameObject {
         // function to delay animation by adding to the animStartTime
         // useful for pausing an animation by not updating it, but you want to continue at the frame you left off at
 
-        void draw() {for(int i = 0; i < nodeCount; i++) {if(nodes[i].name[0] != 'M') {nodes[i].draw(nodes, textures, meshes, anims, channels, currentAnimation, frame);}}}
+        void draw() {
+            Mat4 transform = getIdentityMat4();
+
+            transform = multiplyMat4s(transform, getTranslationScaleMat4(position, scale));
+            transform = multiplyMat4s(transform, getAngleRotationMat4(rotation));
+
+            for(int i = 0; i < nodeCount; i++) {if(nodes[i].name[0] != 'M') {nodes[i].draw(transform, nodes, textures, meshes, anims, channels, currentAnimation, frame);}}
+        }
 };
 
 #endif
