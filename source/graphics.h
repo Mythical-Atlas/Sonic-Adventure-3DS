@@ -175,6 +175,8 @@ bool compareStrings(int aLen, const char* a, int bLen, const char* b) {
 	return 1;
 }
 
+unsigned long long progStartTime;
+
 DVLB_s* vshader_dvlb;
 shaderProgram_s shaderProgram;
 int uLoc_projection, uLoc_modelView;

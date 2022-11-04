@@ -3,6 +3,7 @@
 #include "mesh.h"
 #include "anim.h"
 #include "animChannel.h"
+#include "model.h"
 
 using namespace std;
 
@@ -11,9 +12,13 @@ using namespace std;
 
 class GameObject {
     public:
+        int nodeCount;
         Node* nodes;
+        int meshCount;
         Mesh* meshes;
+        int animCount;
         Anim* anims;
+        int channelCount;
         AnimChannel* channels;
         
         C3D_Tex* textures;
@@ -22,93 +27,80 @@ class GameObject {
         Quat rotation;
         Vec3 scale;
 
-        void loadModel(
-            int nodeCount,
-            int* nodeNameLengths,
-            const char** nodeNames,
-            float** nodeTransformations,
-            int* nodeParentIndices,
-            int* nodeChildCounts,
-            int** nodeChildIndices,
-            int* nodeMeshCounts,
-            int** nodeMeshIndices,
-            int meshCount,
-            int* meshVertCounts,
-            float** meshVertices,
-            int* meshMaterialIDs,
-            int animationCount,
-            int* animationNameLengths,
-            const char** animationNames,
-            double* animationDurations,
-            double* animationTicksPerSeconds,
-            int* animationChannelCounts,
-            int** animationChannelIndices,
-            int animationChannelCount,
-            int* animationChannelNodeNameLengths,
-            const char** animationChannelNodeNames,
-            int* animationChannelPositionKeyCounts,
-            double** animationChannelPositionKeyTimes,
-            float** animationChannelPositionKeyValues,
-            int* animationChannelRotationKeyCounts,
-            double** animationChannelRotationKeyTimes,
-            float** animationChannelRotationKeyValues,
-            int* animationChannelScaleKeyCounts,
-            double** animationChannelScaleKeyTimes,
-            float** animationChannelScaleKeyValues
-        ) {
+        int currentAnimation;
+        unsigned long long animStartTime;
+        int frame;
+
+        void loadModel(Model model) {
+            nodeCount = model.nodeCount;
+            meshCount = model.meshCount;
+            animCount = model.animationCount;
+            channelCount = model.animationChannelCount;
+
             nodes = (Node*)linearAlloc(sizeof(Node) * nodeCount);
             meshes = (Mesh*)linearAlloc(sizeof(Mesh) * meshCount);
-            anims = (Anim*)linearAlloc(sizeof(Anim) * animationCount);
-            channels = (AnimChannel*)linearAlloc(sizeof(AnimChannel) * animationChannelCount);
+            anims = (Anim*)linearAlloc(sizeof(Anim) * animCount);
+            channels = (AnimChannel*)linearAlloc(sizeof(AnimChannel) * channelCount);
 
             for(int i = 0; i < nodeCount; i++) {nodes[i].loadNode(
-                nodes,
-                nodeNameLengths[i],
-                nodeNames[i],
-                nodeTransformations[i],
-                nodeParentIndices[i],
-                nodeChildCounts[i],
-                nodeChildIndices[i],
-                nodeMeshCounts[i],
-                nodeMeshIndices[i]
+                model.nodeNameLengths[i],
+                model.nodeNames[i],
+                model.nodeTransformations[i],
+                model.nodeParentIndices[i],
+                model.nodeChildCounts[i],
+                model.nodeChildIndices[i],
+                model.nodeMeshCounts[i],
+                model.nodeMeshIndices[i]
             );}
             for(int i = 0; i < meshCount; i++) {
                 meshes[i].loadMesh(
-                    meshVertCounts[i],
-                    meshVertices[i],
-                    meshMaterialIDs[i]
+                    model.meshVertCounts[i],
+                    model.meshVertPositions[i],
+                    model.meshVertUVs[i],
+                    model.meshVertNormals[i],
+                    model.meshMaterialIDs[i]
                 );
                 meshes[i].initVBO();
             }
-            for(int i = 0; i < animationCount; i++) {anims[i].loadAnim(
-                animationNameLengths[i],
-                animationNames[i],
-                animationDurations[i],
-                animationTicksPerSeconds[i],
-                animationChannelCounts[i],
-                animationChannelIndices[i]
+            for(int i = 0; i < animCount; i++) {anims[i].loadAnim(
+                model.animationNameLengths[i],
+                model.animationNames[i],
+                model.animationDurations[i],
+                model.animationTicksPerSeconds[i],
+                model.animationChannelCounts[i],
+                model.animationChannelIndices[i]
             );}
-            for(int i = 0; i < animationChannelCount; i++) {channels[i].loadAnimChannel(
-                animationChannelNodeNameLengths[i],
-                animationChannelNodeNames[i],
-                animationChannelPositionKeyCounts[i],
-                animationChannelPositionKeyTimes[i],
-                animationChannelPositionKeyValues[i],
-                animationChannelRotationKeyCounts[i],
-                animationChannelRotationKeyTimes[i],
-                animationChannelRotationKeyValues[i],
-                animationChannelScaleKeyCounts[i],
-                animationChannelScaleKeyTimes[i],
-                animationChannelScaleKeyValues[i]
+            for(int i = 0; i < channelCount; i++) {channels[i].loadAnimChannel(
+                model.animationChannelNodeNameLengths[i],
+                model.animationChannelNodeNames[i],
+                model.animationChannelPositionKeyCounts[i],
+                model.animationChannelPositionKeyTimes[i],
+                model.animationChannelPositionKeyValues[i],
+                model.animationChannelRotationKeyCounts[i],
+                model.animationChannelRotationKeyTimes[i],
+                model.animationChannelRotationKeyValues[i],
+                model.animationChannelScaleKeyCounts[i],
+                model.animationChannelScaleKeyTimes[i],
+                model.animationChannelScaleKeyValues[i]
             );}
+
+            currentAnimation = -1;
         }
         void setTextures(C3D_Tex* textures) {this->textures = textures;}
 
-        void draw() {
-            for(int i = 0; i < nodeCount; i++) {
-                if(nodes[i].name[0] != 'M') {nodes[i].draw(nodes, textures, meshes, animationCount, anims, channels);}
+        void setAnimation(int newAnim) {
+            if(newAnim >= -1 && newAnim < animCount) {
+                animStartTime = osGetTime();
+                currentAnimation = newAnim;
             }
         }
+
+        void updateAnimation() {frame = (int)((osGetTime() - animStartTime) / 1000.0 * anims[currentAnimation].ticksPerSecond) % (int)anims[currentAnimation].duration;}
+
+        // function to delay animation by adding to the animStartTime
+        // useful for pausing an animation by not updating it, but you want to continue at the frame you left off at
+
+        void draw() {for(int i = 0; i < nodeCount; i++) {if(nodes[i].name[0] != 'M') {nodes[i].draw(nodes, textures, meshes, anims, channels, currentAnimation, frame);}}}
 };
 
 #endif

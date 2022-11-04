@@ -31,47 +31,22 @@ float zoom = -500;
 
 C3D_Tex* sonicTextures;
 
-GameObject sonicModel;
+GameObject sonicObject;
 
 void sceneInit() {
 	romfsInit();
 
-	loadModelPointers();
+	FILE* modelFile = fopen("romfs:/model.c3m", "rb");
+	fseek(modelFile, 0, SEEK_END);
+	long int modelSize = ftell(modelFile);
+	rewind(modelFile);
+	unsigned char* modelData = (unsigned char*)linearAlloc(modelSize);
+	fread(modelData, sizeof(unsigned char), modelSize, modelFile);
+	fclose(modelFile);
 
-	sonicModel.loadModel(
-		nodeCount,
-		nodeNameLengths,
-		nodeNames,
-		nodeTransformations,
-		nodeParentIndices,
-		nodeChildCounts,
-		nodeChildIndices,
-		nodeMeshCounts,
-		nodeMeshIndices,
-		meshCount,
-		meshVertCounts,
-		meshVertices,
-		meshMaterialIDs,
-		animationCount,
-		animationNameLengths,
-		animationNames,
-		animationDurations,
-		animationTicksPerSeconds,
-		animationChannelCounts,
-		animationChannelIndices,
-		animationChannelCount,
-		animationChannelNodeNameLengths,
-		animationChannelNodeNames,
-		animationChannelPositionKeyCounts,
-		animationChannelPositionKeyTimes,
-		animationChannelPositionKeyValues,
-		animationChannelRotationKeyCounts,
-		animationChannelRotationKeyTimes,
-		animationChannelRotationKeyValues,
-		animationChannelScaleKeyCounts,
-		animationChannelScaleKeyTimes,
-		animationChannelScaleKeyValues
-	);
+	Model sonicModel;
+	sonicModel.loadModel(modelData, modelSize);
+	sonicObject.loadModel(sonicModel);
 
 	initGraphics();
 
@@ -138,7 +113,8 @@ void sceneInit() {
 		sonicMeshes[s].initialize(GetVector3(new float[]{0, 0, 0}), GetVector3(new float[]{0, 0, 0}), GetVector3(new float[]{0, 0, 0}));
 	}*/
 
-	sonicModel.setTextures(sonicTextures);
+	sonicObject.setTextures(sonicTextures);
+	sonicObject.setAnimation(-1);
 }
 
 void sceneRender(void) {
@@ -155,7 +131,8 @@ void sceneRender(void) {
 		sonicMeshes[s].draw();
 	}*/
 
-	sonicModel.draw();
+	sonicObject.updateAnimation();
+	sonicObject.draw();
 }
 
 void sceneExit() {
@@ -183,6 +160,7 @@ int main() {
 
 	sceneInit();
 
+	progStartTime = osGetTime();
 	while (aptMainLoop()) {
 		hidScanInput();
 
@@ -198,7 +176,12 @@ int main() {
 		if(hidKeysHeld() & KEY_A) {zoom += 5;}
 		if(hidKeysHeld() & KEY_B) {zoom -= 5;}
 
+		if(hidKeysDown() & KEY_L) {sonicObject.setAnimation(sonicObject.currentAnimation - 1);}
+		if(hidKeysDown() & KEY_R) {sonicObject.setAnimation(sonicObject.currentAnimation + 1);}
+
 	//angleY += M_PI / 360;}
+
+		//printf("time since prog start: %llu\n", osGetTime() - progStartTime);
 
 		// Render the scene
 		C3D_FrameBegin(C3D_FRAME_SYNCDRAW); // can be 0

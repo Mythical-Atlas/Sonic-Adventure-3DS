@@ -19,7 +19,9 @@ public:
 
     void loadMesh(
         int vertCount,
-        float* vertFloats,
+        Vec3* meshVertPositions,
+        Vec2* meshVertUVs,
+        Vec3* meshVertNormals,
         int materialID
     ) {
         this->vertCount = vertCount;
@@ -31,14 +33,14 @@ public:
         vertexData = (Vertex*)linearAlloc(sizeof(Vertex) * vertCount);
 
         for(int i = 0; i < vertCount; i++) {
-            vertices[i].x = vertFloats[i * 8 + 0];
-            vertices[i].y = vertFloats[i * 8 + 1];
-            vertices[i].z = vertFloats[i * 8 + 2];
-            uvCoords[i].x = vertFloats[i * 8 + 3];
-            uvCoords[i].y = vertFloats[i * 8 + 4];
-            normals[i].x = vertFloats[i * 8 + 5];
-            normals[i].y = vertFloats[i * 8 + 6];
-            normals[i].z = vertFloats[i * 8 + 7];
+            vertices[i].x = meshVertPositions[i].x;
+            vertices[i].y = meshVertPositions[i].y;
+            vertices[i].z = meshVertPositions[i].z;
+            uvCoords[i].x = meshVertUVs[i].x;
+            uvCoords[i].y = meshVertUVs[i].y;
+            normals[i].x = meshVertNormals[i].x;
+            normals[i].y = meshVertNormals[i].y;
+            normals[i].z = meshVertNormals[i].z;
         }
     }
 
