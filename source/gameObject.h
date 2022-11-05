@@ -90,6 +90,7 @@ class GameObject {
             scale.y = 1;
             scale.z = 1;
         }
+
         void setTextures(C3D_Tex* textures) {this->textures = textures;}
 
         void setAnimation(int newAnim) {
@@ -99,7 +100,7 @@ class GameObject {
             }
         }
 
-        void updateAnimation() {frame = (int)((osGetTime() - animStartTime) / 1000.0 * anims[currentAnimation].ticksPerSecond) % (int)anims[currentAnimation].duration;}
+        void updateAnimation(float animScale) {frame = (int)((osGetTime() - animStartTime) / 1000.0 * anims[currentAnimation].ticksPerSecond * animScale) % (int)anims[currentAnimation].duration;}
 
         // function to delay animation by adding to the animStartTime
         // useful for pausing an animation by not updating it, but you want to continue at the frame you left off at
