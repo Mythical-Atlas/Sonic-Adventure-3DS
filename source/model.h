@@ -245,6 +245,9 @@ public:
                 for(int n = 0; n < animationChannelScaleKeyCounts[i]; n++) {animationChannelScaleKeyValues[i][n] = loadVec3(&data[di]); di += 4 * 3;}
             }
         }
+
+    void free() {
+        //
     }
 };
 

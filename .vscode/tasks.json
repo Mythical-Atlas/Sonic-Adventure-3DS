@@ -6,7 +6,7 @@
         {
             "label": "build and run",
             "type": "shell",
-            "command": "make\nStart-Process \"C:\\Citra\\nightly-mingw\\citra-qt.exe\" sonic-adventure-3ds.3dsx",
+            "command": "make\nStart-Process \"C:\\Citra\\nightly-mingw\\citra.exe\" sonic-adventure-3ds.3dsx",
             "options": {
                 "cwd": "C:\\Users\\Ben\\Desktop\\sonic-adventure-3ds\\"
             },
