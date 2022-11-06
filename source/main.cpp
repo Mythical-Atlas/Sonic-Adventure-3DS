@@ -18,28 +18,33 @@ GameObject ec1obj;
 
 Player sonic;
 
+C3D_Tex groundTexture;
+
 void sceneInit() {
 	romfsInit();
 
-	sonic.init(getVec3(0, 535, 0), getVec3(0, 0, 0));
+	//sonic.init(getVec3(0, 535, 0), getVec3(0, 0, 0));
 
-	/*FILE* modelFile = fopen("romfs:/sonicModel.c3m", "rb");
+	FILE* modelFile = fopen("romfs:/ec1model.c3m", "rb");
 	fseek(modelFile, 0, SEEK_END);
 	long int modelSize = ftell(modelFile);
 	rewind(modelFile);
 	unsigned char* modelData = (unsigned char*)linearAlloc(modelSize);
 	fread(modelData, sizeof(unsigned char), modelSize, modelFile);
-	fclose(modelFile);*/
+	fclose(modelFile);
 
-	//ec1model.loadModel(modelData, modelSize);
-	//ec1obj.loadModel(ec1model);
+	ec1model.loadModel(modelData, modelSize);
+	ec1obj.loadModel(ec1model);
+	ec1obj.setAnimation(-1);
 
 	initGraphics();
 
 	Mtx_PerspTilt(&projection, C3D_AngleFromDegrees(70.0f), C3D_AspectRatioTop, 0.01f, 100000.0f, false);
 
-	//loadTextureFromMem(&groundTexture, testGround_t3x, testGround_t3x_size);
-	//C3D_TexSetFilter(&groundTexture, GPU_LINEAR, GPU_NEAREST);
+	loadTextureFromMem(&groundTexture, testGround_t3x, testGround_t3x_size);
+	C3D_TexSetFilter(&groundTexture, GPU_LINEAR, GPU_NEAREST);
+
+	ec1obj.setTextures(&groundTexture);
 }
 
 void sceneRender(void) {
@@ -54,9 +59,9 @@ void sceneRender(void) {
 
     updateUniforms(&modelView);
 
-	//ec1obj.draw();
+	ec1obj.draw();
 
-	sonic.render();
+	//sonic.render();
 }
 
 void sceneExit() {

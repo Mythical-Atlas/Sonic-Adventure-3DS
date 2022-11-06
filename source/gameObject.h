@@ -84,6 +84,8 @@ class GameObject {
                 model.animationChannelScaleKeyValues[i]
             );}
 
+            model.freeModel();
+
             currentAnimation = -1;
 
             scale.x = 1;
@@ -111,7 +113,8 @@ class GameObject {
             transform = multiplyMat4s(transform, getTranslationScaleMat4(position, scale));
             transform = multiplyMat4s(transform, getAngleRotationMat4(rotation));
 
-            for(int i = 0; i < nodeCount; i++) {if(nodes[i].name[0] != 'M') {nodes[i].draw(transform, nodes, textures, meshes, anims, channels, currentAnimation, frame);}}
+            //printf("%i\n", nodeCount);
+            for(int i = 0; i < 936; i++) {nodes[i].draw(transform, nodes, textures, meshes, anims, channels, currentAnimation, frame);}
         }
 };
 

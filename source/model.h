@@ -245,9 +245,22 @@ public:
                 for(int n = 0; n < animationChannelScaleKeyCounts[i]; n++) {animationChannelScaleKeyValues[i][n] = loadVec3(&data[di]); di += 4 * 3;}
             }
         }
+    }
 
-    void free() {
-        //
+    void freeModel() {
+        /*for(int i = 0; i < nodeCount; i++) {
+            free(nodeChildIndices[i]);
+            free(nodeMeshIndices[i]);
+        }*/
+
+        /*free(nodeNameLengths);
+        free(nodeNames);
+        free(nodeTransformations);
+        free(nodeParentIndices);
+        free(nodeChildCounts);
+        free(nodeChildIndices);
+        free(nodeMeshCounts);
+        free(nodeMeshIndices);*/
     }
 };
 

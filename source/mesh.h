@@ -82,10 +82,12 @@ public:
     }
 
     void draw(C3D_Tex* textures) {
-        C3D_SetBufInfo(&buffer);
-        memcpy(vboData, vertexData, sizeof(Vertex) * vertCount);
-        C3D_TexBind(0, &textures[materialID]);
-        C3D_DrawArrays(GPU_TRIANGLES, 0, vertCount);
+        if(materialID != -1) {
+            C3D_SetBufInfo(&buffer);
+            memcpy(vboData, vertexData, sizeof(Vertex) * vertCount);
+            C3D_TexBind(0, /*&*/textures/*[materialID]*/);
+            C3D_DrawArrays(GPU_TRIANGLES, 0, vertCount);
+        }
     }
 };
 
