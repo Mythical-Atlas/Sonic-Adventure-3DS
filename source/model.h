@@ -169,7 +169,7 @@ public:
             if(meshVertCounts[i] > 0) {
                 meshVertPositions[i] = (Vec3*)linearAlloc(sizeof(Vec3) * meshVertCounts[i]);
                 meshVertUVs[i] = (Vec2*)linearAlloc(sizeof(Vec2) * meshVertCounts[i]);
-                meshVertNormals[i] = (Vec3*)linearAlloc(sizeof(Vec3) * meshVertCounts[i]);
+                meshVertNormals[i] = (Vec3*)vramAlloc(sizeof(Vec3) * meshVertCounts[i]);
                 for(int n = 0; n < meshVertCounts[i]; n++) {
                     meshVertPositions[i][n] = loadVec3(&data[di]); di += 4 * 3;
                     meshVertUVs[i][n] = loadVec2(&data[di]); di += 4 * 2;

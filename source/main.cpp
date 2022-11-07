@@ -23,7 +23,7 @@ C3D_Tex groundTexture;
 void sceneInit() {
 	romfsInit();
 
-	//sonic.init(getVec3(0, 535, 0), getVec3(0, 0, 0));
+	sonic.init(getVec3(0, 535, 0), getVec3(0, 0, 0));
 
 	FILE* modelFile = fopen("romfs:/ec1model.c3m", "rb");
 	fseek(modelFile, 0, SEEK_END);
@@ -59,9 +59,9 @@ void sceneRender(void) {
 
     updateUniforms(&modelView);
 
-	ec1obj.draw();
+	ec1obj.draw(0);
 
-	//sonic.render();
+	sonic.render();
 }
 
 void sceneExit() {

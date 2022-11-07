@@ -107,14 +107,14 @@ class GameObject {
         // function to delay animation by adding to the animStartTime
         // useful for pausing an animation by not updating it, but you want to continue at the frame you left off at
 
-        void draw() {
+        void draw(bool useNode) {
             Mat4 transform = getIdentityMat4();
 
             transform = multiplyMat4s(transform, getTranslationScaleMat4(position, scale));
             transform = multiplyMat4s(transform, getAngleRotationMat4(rotation));
 
-            //printf("%i\n", nodeCount);
-            for(int i = 0; i < 936; i++) {nodes[i].draw(transform, nodes, textures, meshes, anims, channels, currentAnimation, frame);}
+            if(useNode) {for(int i = 0;  i < nodeCount; i++) {if(nodes[i].name[0] != 'M') {nodes[i].draw(transform, nodes, textures, meshes, anims, channels, currentAnimation, frame);}}}
+            else {for(int i = 0; i < 936; i++) {nodes[i].draw(transform, nodes, textures, meshes, anims, channels, currentAnimation, frame);}}
         }
 };
 

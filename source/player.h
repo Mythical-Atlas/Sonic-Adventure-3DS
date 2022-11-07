@@ -112,7 +112,7 @@ public:
         float speed = sqrtf(vel.x * vel.x + vel.z * vel.z);
 
         gameObject.updateAnimation(speed / 70.0f);
-	    gameObject.draw();
+	    gameObject.draw(1);
     }
 };
 
